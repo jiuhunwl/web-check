@@ -1,12 +1,29 @@
 ---
-import ErrorPage from '@components/error/ErrorPage.astro';
+import PageLayout from '@layouts/Page.astro';
+import Main from '../client/main.tsx';
+import '../client/styles/index.css';
 
+/**
+ * EdgeOne Makers classifies this project as an Astro (MPA) site, so it ignores
+ * the `/*` -> `/index.html` rewrite in edgeone.json and serves this 404 page for
+ * unmatched paths — including /check/<url> and /<tool>/<url>.
+ *
+ * Those routes only exist on the client, so the 404 page boots the same React
+ * app shell as index.astro. The router then resolves the deep link and renders
+ * the results view; genuinely unknown paths fall through to `NotFound`.
+ *
+ * The HTTP status stays 404, which browsers ignore for a same-origin navigation.
+ */
 export const prerender = true;
 ---
 
-<ErrorPage
-  status={404}
-  statusText="Not Found"
-  heading={['Page', 'not found']}
-  message="There's nothing at this address. The link may be mistyped, or the page has moved."
-/>
+<PageLayout title="Web Check" description="All-in-one OSINT tool for analysing any website">
+  <Main client:only="react" />
+</PageLayout>
+
+<style is:global>
+  body {
+    --page-width: min(94vw, 2200px);
+    --main-padding: 2rem 0;
+  }
+</style>
