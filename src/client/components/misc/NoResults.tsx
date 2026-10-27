@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import colors from 'client/styles/colors';
 import { StyledCard } from 'client/components/Form/Card';
 import Heading from 'client/components/Form/Heading';
-import { useT } from 'client/i18n';
+import { useT, localizeReason } from 'client/i18n';
 
 const Wrapper = styled(StyledCard)`
   margin: 0 auto;
@@ -117,7 +117,7 @@ const NoResults = ({ address, error, kind = 'unreachable' }: Props): JSX.Element
       </ul>
       {error && (
         <span className="detail">
-          {kind === 'blocked' ? t('Reason') : t('Lookup error')}: {error}
+          {kind === 'blocked' ? t('Reason') : t('Lookup error')}: {localizeReason(error)}
         </span>
       )}
     </Wrapper>

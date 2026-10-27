@@ -9,6 +9,18 @@ const HstsCard = (props: { data: any; title: string; actionButtons: any }): JSX.
   const { hstsHeader, message } = props.data;
   const { maxAge, includeSubDomains, preload } = parseHsts(hstsHeader || '');
   const days = Math.round(maxAge / 86400);
+
+  // The verdict is worded by the handler, so it only needs translating. Its
+  // max-age variant carries numbers, which travel as placeholders.
+  const localizeVerdict = (verdict: string): string => {
+    const aged = /^HSTS max-age is (\d+), below the (\d+) minimum\.$/.exec(verdict);
+    if (!aged) return t(verdict);
+    return t('HSTS max-age is {maxAge}, below the {min} minimum.', {
+      maxAge: formatNumber(Number(aged[1])),
+      min: formatNumber(Number(aged[2])),
+    });
+  };
+
   return (
     <Card heading={props.title} actionButtons={props.actionButtons}>
       <Row
@@ -45,7 +57,7 @@ const HstsCard = (props: { data: any; title: string; actionButtons: any }): JSX.
           />
         </>
       )}
-      {message && <p>{message}</p>}
+      {message && <p>{localizeVerdict(message)}</p>}
     </Card>
   );
 };

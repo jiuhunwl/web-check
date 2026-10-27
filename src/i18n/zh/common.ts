@@ -189,6 +189,36 @@ const common: Record<string, string> = {
   'This check is not applicable for the current input': '该检测不适用于当前输入',
   'Web-Check has been temporarily disabled on this instance': '此实例上的 Web-Check 已被临时停用',
   'Client-side timeout reached': '已达到客户端超时上限',
+  // Reasons the handlers send back when a check has nothing to work with
+  'Breach lookups apply to domains, not IP addresses': '数据泄露查询只适用于域名，不适用于 IP 地址',
+  'CAA records apply to domains, not IP addresses': 'CAA 记录只适用于域名，不适用于 IP 地址',
+  'Could not resolve a registrable domain': '无法解析出可注册的域名',
+  'No SSL Labs report available for this host': '该主机暂无 SSL Labs 报告',
+  'No TXT records for this host': '该主机没有 TXT 记录',
+  'No WHOIS data available for this domain': '该域名暂无 WHOIS 数据',
+  'No mail server in use on this domain': '该域名未使用邮件服务器',
+  'No quality report available for this URL': '该 URL 暂无质量报告',
+  'No robots.txt file present on this host': '该主机上没有 robots.txt 文件',
+  'No robots.txt rules found for this host': '该主机的 robots.txt 中没有可用规则',
+  'No sitemap found for this site': '未发现该站点的站点地图',
+  'No social profiles found for this site': '未发现该站点的社交账号',
+  'No social tags found on this page': '该页面没有社交标签',
+  'No threat sources returned data for this host': '所有威胁情报源都没有该主机的数据',
+  'Page is not HTML, so has no resources to check': '页面不是 HTML，没有可检查的资源',
+  'Site has never before been archived via the Wayback Machine':
+    '该站点从未被 Wayback Machine 存档',
+  'Site returned no content, cannot calculate carbon': '站点未返回内容，无法计算碳排放',
+  'Subdomain enumeration only applies to domain names': '子域名枚举只适用于域名',
+  'Traceroute returned no answered hops for this host': '该主机的路由追踪没有收到任何响应节点',
+  'WHOIS lookups apply to domains, not IP addresses': 'WHOIS 查询只适用于域名，不适用于 IP 地址',
+  "{host} isn't ranked in the top 1 million sites yet": '{host} 尚未进入全球前 100 万网站排名',
+  'No nameservers found for {domain}': '未找到 {domain} 的名称服务器',
+  'No subdomains found for {domain} in Certificate Transparency logs':
+    '证书透明度日志中没有发现 {domain} 的子域名',
+  'Host could not be resolved': '无法解析该主机',
+  'No internal or external links found in the page HTML.':
+    '页面 HTML 中未发现内部或外部链接。',
+  'Traceroute is not installed in this environment.': '当前环境未安装 traceroute。',
 
   // Raw data and docs
   'View / Download Raw Data': '查看 / 下载原始数据',

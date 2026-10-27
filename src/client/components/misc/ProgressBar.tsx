@@ -4,7 +4,7 @@ import colors from 'client/styles/colors';
 import Card from 'client/components/Form/Card';
 import Heading from 'client/components/Form/Heading';
 import { formatNumber } from 'client/utils/format';
-import { useT } from 'client/i18n';
+import { useT, localizeReason } from 'client/i18n';
 
 export type LoadingState = 'success' | 'loading' | 'skipped' | 'error' | 'timed-out';
 
@@ -461,7 +461,7 @@ const ProgressLoader = ({ loadStatus, showModal, showJobDocs }: ProgressLoaderPr
             : t("The {name} job ended with state '{state}'.", { name: job.name, state })}{' '}
           {detailsLabel}
         </p>
-        <pre className={isInfo ? 'info' : 'error'}>{job.error}</pre>
+        <pre className={isInfo ? 'info' : 'error'}>{localizeReason(job.error)}</pre>
       </ErrorModalContent>,
     );
   };

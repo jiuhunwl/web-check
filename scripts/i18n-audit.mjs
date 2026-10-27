@@ -6,7 +6,7 @@
  * have no Chinese entry. Run with: node scripts/i18n-audit.mjs
  */
 import { build } from 'esbuild';
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -56,6 +56,18 @@ for (const file of files) {
   if (!isAstro) continue;
   const attrPattern = /data-i18n(?:-[a-z-]+)?=(?:"([^"]+)"|'([^']+)')/g;
   for (const match of text.matchAll(attrPattern)) add(match[1] ?? match[2], file);
+}
+
+// The handlers word their own skip reasons, which the client translates by
+// matching the finished sentence back to its key (see localizeReason)
+const handlerDirs = [join(root, 'api'), join(root, 'cloud-functions', 'api', '_handlers')];
+for (const dir of handlerDirs) {
+  if (!existsSync(dir)) continue;
+  for (const file of walk(dir).filter((f) => f.endsWith('.js'))) {
+    const text = readFileSync(file, 'utf8');
+    for (const match of text.matchAll(/skipped:\s*(['"`])((?:\\[\s\S]|(?!\1)[^\\])*?)\1/g))
+      add(match[2].trim(), file);
+  }
 }
 
 const rows = [...missing.entries()].sort((a, b) => a[0].localeCompare(b[0]));

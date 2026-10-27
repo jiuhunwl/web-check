@@ -129,6 +129,15 @@ const results: Record<string, string> = {
   'HSTS Enabled?': '已启用 HSTS？',
   '{count} days': '{count} 天',
   '{count} seconds': '{count} 秒',
+  // Verdicts come from the handler, worded once and translated here
+  'Site does not serve any HSTS headers.': '站点未返回任何 HSTS 响应头。',
+  'HSTS max-age is {maxAge}, below the {min} minimum.':
+    'HSTS 的 max-age 为 {maxAge}，低于最低要求 {min}。',
+  'HSTS header does not include all subdomains.':
+    'HSTS 响应头缺少 includeSubDomains 指令，子域名不受保护。',
+  'HSTS header does not contain the preload directive.':
+    'HSTS 响应头缺少 preload 指令，无法加入预加载列表。',
+  'Site is compatible with the HSTS preload list!': '站点符合 HSTS 预加载列表要求！',
 
   // HTTP security
   'Via CSP': '通过 CSP',
