@@ -219,6 +219,17 @@ const common: Record<string, string> = {
   'No internal or external links found in the page HTML.':
     '页面 HTML 中未发现内部或外部链接。',
   'Traceroute is not installed in this environment.': '当前环境未安装 traceroute。',
+  // Built by requireEnv() and upstreamError(), with the name kept in the middle
+  '{service} requires {env} to be set': '需要先配置 {env}，才能运行{service}。',
+  'No {context} data for this host': '该主机暂无{context}数据。',
+  'Quality check': '质量检测',
+  'CAA lookup': 'CAA 查询',
+  'DNS server lookup': 'DNS 服务器查询',
+  'Firewall check': '防火墙检测',
+  'Headers fetch': '响应头抓取',
+  'Linked pages fetch': '外链页面抓取',
+  'Page fetch': '页面抓取',
+  'Redirect lookup': '重定向查询',
 
   // Raw data and docs
   'View / Download Raw Data': '查看 / 下载原始数据',

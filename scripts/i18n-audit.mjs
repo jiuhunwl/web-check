@@ -70,6 +70,13 @@ for (const dir of handlerDirs) {
   }
 }
 
+// Templated reasons are matched by pattern first, so their keys only exist in
+// the lookup table — check those too
+const reasonTable = join(src, 'client', 'i18n.tsx');
+for (const match of readFileSync(reasonTable, 'utf8').matchAll(/key:\s*'([^']+)'/g)) {
+  add(match[1], reasonTable);
+}
+
 const rows = [...missing.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 if (!rows.length) {
   console.log('All translated strings have a Chinese entry.');
