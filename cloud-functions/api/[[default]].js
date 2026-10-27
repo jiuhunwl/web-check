@@ -5,6 +5,11 @@
  * Express). This file mounts them on a single Express app, which EdgeOne
  * Makers accepts as a function entry (`export default app`).
  *
+ * Handlers are mirrored from /api into ./_handlers by scripts/sync-eo-handlers.mjs.
+ * They must live inside cloud-functions/: the platform copies this directory to
+ * an isolated location before bundling, so imports pointing outside it stay
+ * unresolved and fail at runtime on their npm dependencies.
+ *
  * Two things to keep in mind when editing:
  *
  * 1. `api/_common/middleware.js` reads `process.env.PLATFORM` at module
@@ -32,42 +37,42 @@ const NEEDS_BROWSER = {
 
 /** Lazy loaders — static specifiers so the bundler can follow them */
 const loaders = {
-  'archives': () => import('../../api/archives.js'),
-  'block-lists': () => import('../../api/block-lists.js'),
-  'breaches': () => import('../../api/breaches.js'),
-  'caa-records': () => import('../../api/caa-records.js'),
-  'carbon': () => import('../../api/carbon.js'),
-  'dns-server': () => import('../../api/dns-server.js'),
-  'dns': () => import('../../api/dns.js'),
-  'dnssec': () => import('../../api/dnssec.js'),
-  'firewall': () => import('../../api/firewall.js'),
-  'get-ip': () => import('../../api/get-ip.js'),
-  'headers': () => import('../../api/headers.js'),
-  'hsts': () => import('../../api/hsts.js'),
-  'http-security': () => import('../../api/http-security.js'),
-  'linked-pages': () => import('../../api/linked-pages.js'),
-  'location': () => import('../../api/location.js'),
-  'mail-config': () => import('../../api/mail-config.js'),
-  'mixed-content': () => import('../../api/mixed-content.js'),
-  'ports': () => import('../../api/ports.js'),
-  'quality': () => import('../../api/quality.js'),
-  'rank': () => import('../../api/rank.js'),
-  'redirects': () => import('../../api/redirects.js'),
-  'robots-txt': () => import('../../api/robots-txt.js'),
-  'security-txt': () => import('../../api/security-txt.js'),
-  'shodan': () => import('../../api/shodan.js'),
-  'sitemap': () => import('../../api/sitemap.js'),
-  'social-presence': () => import('../../api/social-presence.js'),
-  'social-tags': () => import('../../api/social-tags.js'),
-  'ssl': () => import('../../api/ssl.js'),
-  'status': () => import('../../api/status.js'),
-  'subdomains': () => import('../../api/subdomains.js'),
-  'threats': () => import('../../api/threats.js'),
-  'tls-connection': () => import('../../api/tls-connection.js'),
-  'tls-labs': () => import('../../api/tls-labs.js'),
-  'trace-route': () => import('../../api/trace-route.js'),
-  'txt-records': () => import('../../api/txt-records.js'),
-  'whois': () => import('../../api/whois.js'),
+  'archives': () => import('./_handlers/archives.js'),
+  'block-lists': () => import('./_handlers/block-lists.js'),
+  'breaches': () => import('./_handlers/breaches.js'),
+  'caa-records': () => import('./_handlers/caa-records.js'),
+  'carbon': () => import('./_handlers/carbon.js'),
+  'dns-server': () => import('./_handlers/dns-server.js'),
+  'dns': () => import('./_handlers/dns.js'),
+  'dnssec': () => import('./_handlers/dnssec.js'),
+  'firewall': () => import('./_handlers/firewall.js'),
+  'get-ip': () => import('./_handlers/get-ip.js'),
+  'headers': () => import('./_handlers/headers.js'),
+  'hsts': () => import('./_handlers/hsts.js'),
+  'http-security': () => import('./_handlers/http-security.js'),
+  'linked-pages': () => import('./_handlers/linked-pages.js'),
+  'location': () => import('./_handlers/location.js'),
+  'mail-config': () => import('./_handlers/mail-config.js'),
+  'mixed-content': () => import('./_handlers/mixed-content.js'),
+  'ports': () => import('./_handlers/ports.js'),
+  'quality': () => import('./_handlers/quality.js'),
+  'rank': () => import('./_handlers/rank.js'),
+  'redirects': () => import('./_handlers/redirects.js'),
+  'robots-txt': () => import('./_handlers/robots-txt.js'),
+  'security-txt': () => import('./_handlers/security-txt.js'),
+  'shodan': () => import('./_handlers/shodan.js'),
+  'sitemap': () => import('./_handlers/sitemap.js'),
+  'social-presence': () => import('./_handlers/social-presence.js'),
+  'social-tags': () => import('./_handlers/social-tags.js'),
+  'ssl': () => import('./_handlers/ssl.js'),
+  'status': () => import('./_handlers/status.js'),
+  'subdomains': () => import('./_handlers/subdomains.js'),
+  'threats': () => import('./_handlers/threats.js'),
+  'tls-connection': () => import('./_handlers/tls-connection.js'),
+  'tls-labs': () => import('./_handlers/tls-labs.js'),
+  'trace-route': () => import('./_handlers/trace-route.js'),
+  'txt-records': () => import('./_handlers/txt-records.js'),
+  'whois': () => import('./_handlers/whois.js'),
 };
 
 const app = express();
