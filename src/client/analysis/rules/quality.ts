@@ -1,4 +1,5 @@
 import type { Analyzer, Severity } from '../types';
+import { t } from '@/i18n';
 
 const LABELS: Record<string, string> = {
   performance: 'Performance',
@@ -26,9 +27,13 @@ const quality: Analyzer = (d) => {
     const pct = Math.round(score * 100);
     out.push({
       severity: scoreSeverity(score),
-      title: `${label} score: ${pct}`,
+      title: t('{category} score: {pct}', { category: t(label), pct }),
       detail:
-        score < 0.9 ? `Lighthouse flagged ${label.toLowerCase()} as below recommended` : undefined,
+        score < 0.9
+          ? t('Lighthouse flagged {category} as below recommended', {
+              category: t(label).toLowerCase(),
+            })
+          : undefined,
     });
   }
   return out;

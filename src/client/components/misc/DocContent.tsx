@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { checks, isCheck } from '@/data/checks';
 import colors from 'client/styles/colors';
 import Heading from 'client/components/Form/Heading';
+import { useT } from 'client/i18n';
 
 const JobDocsContainer = styled.div`
   p.doc-desc,
@@ -22,25 +23,34 @@ const JobDocsContainer = styled.div`
   }
 `;
 
-const DocContent = (id: string) => {
+const DocContent = (props: { id: string }) => {
+  const t = useT();
+  const { id } = props;
   const doc = isCheck(id) ? checks[id] : null;
-  return doc ? (
+  if (!doc) {
+    return (
+      <JobDocsContainer>
+        <p>{t('No Docs provided for this widget yet')}</p>
+      </JobDocsContainer>
+    );
+  }
+  return (
     <JobDocsContainer>
       <Heading as="h3" size="medium" color={colors.primary}>
-        {doc.title}
+        {t(`check:${id}.title`)}
       </Heading>
       <Heading as="h4" size="small">
-        About
+        {t('About')}
       </Heading>
-      <p className="doc-desc">{doc.description}</p>
+      <p className="doc-desc">{t(`check:${id}.description`)}</p>
       <Heading as="h4" size="small">
-        Use Cases
+        {t('Use Cases')}
       </Heading>
-      <p className="doc-uses">{doc.use}</p>
+      <p className="doc-uses">{t(`check:${id}.use`)}</p>
       {doc.resources.length > 0 && (
         <>
           <Heading as="h4" size="small">
-            Links
+            {t('Links')}
           </Heading>
           <ul>
             {doc.resources.map((resource, index) =>
@@ -53,7 +63,7 @@ const DocContent = (id: string) => {
               ) : (
                 <li key={`link-${index}`} id={`link-${index}`}>
                   <a target="_blank" rel="noreferrer" href={resource.link}>
-                    {resource.title}
+                    {t(resource.title)}
                   </a>
                 </li>
               ),
@@ -61,10 +71,6 @@ const DocContent = (id: string) => {
           </ul>
         </>
       )}
-    </JobDocsContainer>
-  ) : (
-    <JobDocsContainer>
-      <p>No Docs provided for this widget yet</p>
     </JobDocsContainer>
   );
 };

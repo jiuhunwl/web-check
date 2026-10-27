@@ -1,4 +1,5 @@
 import type { Analyzer, Result } from '../types';
+import { t } from '@/i18n';
 
 // A note on how many redirects the chain follows, warning when it's long
 export const checkHops = (chain: string[]): Result | null => {
@@ -6,23 +7,25 @@ export const checkHops = (chain: string[]): Result | null => {
   if (hops >= 4) {
     return {
       severity: 'warning',
-      title: `Long redirect chain: ${hops} hops`,
-      detail: 'Collapse intermediate redirects to reduce latency',
+      title: t('Long redirect chain: {count} hops', { count: hops }),
+      detail: t('Collapse intermediate redirects to reduce latency'),
     };
   }
-  return hops > 0 ? { severity: 'info', title: `${hops} redirect hop(s)` } : null;
+  return hops > 0
+    ? { severity: 'info', title: t('{count} redirect hop(s)', { count: hops }) }
+    : null;
 };
 
 // Whether a chain that starts on HTTP ends up on HTTPS, or null when it starts on HTTPS
 export const checkHttps = (chain: string[]): Result | null => {
   if (!/^http:\/\//i.test(chain[0])) return null;
   if (/^https:\/\//i.test(chain[chain.length - 1])) {
-    return { severity: 'pass', title: 'HTTP requests are redirected to HTTPS' };
+    return { severity: 'pass', title: t('HTTP requests are redirected to HTTPS') };
   }
   return {
     severity: 'critical',
-    title: 'Site does not enforce HTTPS',
-    detail: 'Add a permanent redirect from http:// to https://',
+    title: t('Site does not enforce HTTPS'),
+    detail: t('Add a permanent redirect from http:// to https://'),
   };
 };
 

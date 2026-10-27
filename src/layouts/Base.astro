@@ -3,6 +3,7 @@ import { ClientRouter } from 'astro:transitions';
 import MetaTags from '@layouts/MetaTags.astro';
 import themeScript from '@layouts/scripts/theme.js?raw';
 import settingsScript from '@layouts/scripts/settings.js?raw';
+import i18nScript from '@layouts/scripts/i18n.js?raw';
 
 import '@styles/typography.scss';
 import '@styles/global.scss';
@@ -29,6 +30,7 @@ const { preloadBodyFont = true } = Astro.props;
   <head>
     <script is:inline set:html={themeScript} />
     <script is:inline set:html={settingsScript} />
+    <script is:inline set:html={i18nScript} />
     <ClientRouter />
     <MetaTags {...Astro.props} />
     <slot name="head" />
@@ -48,6 +50,10 @@ const { preloadBodyFont = true } = Astro.props;
 </html>
 
 <script>
+  import { initPageI18n } from '@/i18n';
+
+  initPageI18n();
+
   // Hack to keep Emotion's injected styles in the head when client-router swaps pages
   document.addEventListener('astro:before-swap', ({ newDocument }) => {
     document.head.querySelectorAll('style[data-emotion]').forEach((style, i) => {

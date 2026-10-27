@@ -1,4 +1,5 @@
 import type { Analyzer, Severity } from '../types';
+import { t } from '@/i18n';
 
 // Map SSL Labs grade to severity. Labs uses A+/A/A-/B/C/D/E/F/T/M
 const GRADE_SEVERITY: Record<string, Severity> = {
@@ -39,13 +40,13 @@ const tlsSecurityAudit: Analyzer = (d) => {
     if (GRADES.indexOf(g) > GRADES.indexOf(worstGrade)) worstGrade = g;
   }
   if (severity === 'pass') {
-    return [{ severity: 'pass', title: `SSL Labs grade ${worstGrade}` }];
+    return [{ severity: 'pass', title: t('SSL Labs grade {grade}', { grade: worstGrade }) }];
   }
   return [
     {
       severity,
-      title: `SSL Labs grade ${worstGrade}`,
-      detail: 'Review cipher suites, protocol versions and key strength',
+      title: t('SSL Labs grade {grade}', { grade: worstGrade }),
+      detail: t('Review cipher suites, protocol versions and key strength'),
     },
   ];
 };

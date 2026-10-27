@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import colors from 'client/styles/colors';
 import { StyledCard } from 'client/components/Form/Card';
+import { useT } from 'client/i18n';
 
 const StyledSelfScanMsg = styled(StyledCard)`
   margin: 0px auto 1rem;
@@ -24,7 +25,7 @@ const StyledSelfScanMsg = styled(StyledCard)`
 
 const messages = [
   "Nice try! But scanning this app is like trying to tickle yourself. It just doesn't work!",
-  "Recursive scanning detected. The universe might implode...or it might not. But let's not try to find out.",
+  'Recursive scanning detected. The universe might implode...or it might not. But let\'s not try to find out.',
   "Hey, stop checking us out! We're blushing... 😉",
   'Hmmm, scanning us, are you? We feel so special!',
   "Alert! Mirror scanning detected. Trust us, we're looking good 😉",
@@ -37,20 +38,21 @@ const messages = [
 ];
 
 const SelfScanMsg = () => {
+  const t = useT();
   return (
     <StyledSelfScanMsg>
-      <img src="https://i.ibb.co/0tQbCPJ/test2.png" alt="Self-Scan" />
-      <b>{messages[Math.floor(Math.random() * messages.length)]}</b>
+      <img src="https://i.ibb.co/0tQbCPJ/test2.png" alt={t('Self-Scan')} />
+      <b>{t(messages[Math.floor(Math.random() * messages.length)])}</b>
       <br />
       <span>
-        But if you want to see how this site is built, why not check out the{' '}
+        {t('But if you want to see how this site is built, why not check out the')}{' '}
         <a target="_blank" rel="noreferrer" href="https://github.com/lissy93/web-check">
-          source code
+          {t('source code')}
         </a>
         ?
       </span>
       <br />
-      <i>Do me a favour, and drop the repo a Star while you're there</i> 😉
+      <i>{t("Do me a favour, and drop the repo a Star while you're there")}</i> 😉
     </StyledSelfScanMsg>
   );
 };

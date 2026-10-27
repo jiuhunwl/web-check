@@ -908,8 +908,6 @@ export const termGroups: { title: string; terms: Record<string, Term> }[] = [
 
 export type TermId = keyof typeof glossary;
 
-// What a term means for a row, using its pass or fail wording when it has one
-export const termText = (id: TermId, passed: boolean): string => {
-  const term: Term = glossary[id];
-  return (passed ? term.pass : term.fail) ?? term.definition;
-};
+/** Whether an arbitrary string names a glossary term. */
+export const isTerm = (value: string): value is TermId =>
+  Object.hasOwn(glossary, value);

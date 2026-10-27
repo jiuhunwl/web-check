@@ -1,6 +1,7 @@
 import { Card } from 'client/components/Form/Card';
 import Row, { ExpandableRow } from 'client/components/Form/Row';
 import { fromFindings } from 'client/components/misc/Icon';
+import { useT } from 'client/i18n';
 import type { Cookie } from 'client/utils/result-processor';
 import { checkCookie } from 'client/analysis/rules/cookies';
 
@@ -31,12 +32,13 @@ const cookieStatus = ({ name, attributes }: Cookie) => {
 };
 
 const CookiesCard = (props: { data: any; title: string; actionButtons: any }): JSX.Element => {
+  const t = useT();
   const headerCookies = parseHeaderCookies(props.data.headerCookies) || [];
   const clientCookies = props.data.clientCookies || [];
   const noCookies = !headerCookies.length && !clientCookies.length;
   return (
     <Card heading={props.title} actionButtons={props.actionButtons}>
-      {noCookies && <Row lbl="Cookies" val="None" />}
+      {noCookies && <Row lbl={t('Cookies')} val={t('None')} />}
       {headerCookies.map((cookie, index) => {
         const attributes = Object.keys(cookie.attributes).map((key: string) => {
           return { lbl: key, val: cookie.attributes[key] || true };
@@ -44,7 +46,7 @@ const CookiesCard = (props: { data: any; title: string; actionButtons: any }): J
         return (
           <ExpandableRow
             key={`header-cookie-${index}-${cookie.name}`}
-            lbl={cookie.name || '(unnamed)'}
+            lbl={cookie.name || t('(unnamed)')}
             val={cookie.value}
             term="cookie-security"
             {...cookieStatus(cookie)}

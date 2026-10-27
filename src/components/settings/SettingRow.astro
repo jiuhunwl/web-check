@@ -25,11 +25,17 @@ const Label = hasField ? 'label' : 'span';
 <Row class="row">
   <Head class="head">
     <span class="text">
-      <Label for={hasField ? id : undefined}>{label}</Label>
+      <Label for={hasField ? id : undefined} data-i18n={label}>
+        {label}
+      </Label>
       {hint && (
         <span class="hint" id={hintId}>
-          {hint}
-          {media && <span class="forced">Turned on in your device settings</span>}
+          <span data-i18n={hint}>{hint}</span>
+          {media && (
+            <span class="forced" data-i18n="Turned on in your device settings">
+              Turned on in your device settings
+            </span>
+          )}
         </span>
       )}
     </span>
@@ -47,13 +53,16 @@ const Label = hasField ? 'label' : 'span';
         data-action={key}
         aria-describedby={hintId}
         aria-live="polite"
+        data-i18n={button}
       >
         {button}
       </button>
     )}
     {isList && (
       <span class="count">
-        <span class="skipped-count">None skipped</span>
+        <span class="skipped-count" data-i18n="None skipped">
+          None skipped
+        </span>
         <Icon name="chevron" size={0.7} />
       </span>
     )}

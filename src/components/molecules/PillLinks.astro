@@ -1,6 +1,6 @@
 ---
 interface Props {
-  links: { label: string; href: string }[];
+  links: { label: string; href: string; key?: string }[];
 }
 
 const { links } = Astro.props;
@@ -9,7 +9,9 @@ const { links } = Astro.props;
 <ul>
   {links.map((link) => (
     <li>
-      <a href={link.href}>{link.label}</a>
+      <a href={link.href} data-i18n={link.key ?? link.label}>
+        {link.label}
+      </a>
     </li>
   ))}
 </ul>

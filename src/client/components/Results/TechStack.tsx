@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { Card } from 'client/components/Form/Card';
 import Heading from 'client/components/Form/Heading';
 import colors from 'client/styles/colors';
+import { useT } from 'client/i18n';
 
 const cardStyles = `
   grid-row: span 2;
@@ -78,6 +79,7 @@ const TechStackRow = styled.div`
 `;
 
 const TechStackCard = (props: { data: any; title: string; actionButtons: any }): JSX.Element => {
+  const t = useT();
   const technologies = props.data.technologies;
   const iconsCdn = 'https://www.wappalyzer.com/images/icons/';
   return (
@@ -90,8 +92,11 @@ const TechStackCard = (props: { data: any; title: string; actionButtons: any }):
                 {tech.name}
                 <span className="tech-version">{tech.version ? `(v${tech.version})` : ''}</span>
               </Heading>
-              <span className="tech-confidence" title={`${tech.confidence}% certain`}>
-                Certainty: {tech.confidence}%
+              <span
+                className="tech-confidence"
+                title={t('{count}% certain', { count: tech.confidence })}
+              >
+                {t('Certainty: {count}%', { count: tech.confidence })}
               </span>
               <span className="tech-categories">
                 {tech.categories.map(
@@ -110,7 +115,7 @@ const TechStackCard = (props: { data: any; title: string; actionButtons: any }):
               <div>
                 <p className="tech-description">{tech.description}</p>
                 <p className="tech-website">
-                  Learn more at: <a href={tech.website}>{tech.website}</a>
+                  {t('Learn more at:')} <a href={tech.website}>{tech.website}</a>
                 </p>
               </div>
             </div>

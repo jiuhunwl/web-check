@@ -23,12 +23,16 @@ const links = [
     isCta: false,
   },
 ];
+
+const what =
+  'With <a href="/checks">{count} supported checks</a> you can view and analyse key website information in an instant';
+const whatVars = { count: checkIds.length };
 ---
 
 <div class="about-section">
   <div class="features-wrap">
-    <h4>Ready to get started?</h4>
-    <p class="what">
+    <h4 data-i18n="Ready to get started?">Ready to get started?</h4>
+    <p class="what" data-i18n-html={what} data-i18n-vars={JSON.stringify(whatVars)}>
       With <a href="/checks">{checkIds.length} supported checks</a> you can view and analyse key
       website information in an instant
     </p>

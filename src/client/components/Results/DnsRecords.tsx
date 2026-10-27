@@ -1,14 +1,18 @@
 import { Card } from 'client/components/Form/Card';
 import Row, { ListRow } from 'client/components/Form/Row';
+import { useT } from 'client/i18n';
 
 const styles = `
   grid-row: span 2;
 `;
 
 const DnsRecordsCard = (props: { data: any; title: string; actionButtons: any }): JSX.Element => {
+  const t = useT();
   const dns = props.data;
   const mx = (dns.MX || []).map((r: any) =>
-    typeof r === 'string' ? r : `${r.exchange} (priority ${r.priority})`,
+    typeof r === 'string'
+      ? r
+      : t('{value} (priority {priority})', { value: r.exchange, priority: r.priority }),
   );
   const soa = dns.SOA ? [`${dns.SOA.nsname} (${dns.SOA.hostmaster})`] : [];
   return (
@@ -23,10 +27,17 @@ const DnsRecordsCard = (props: { data: any; title: string; actionButtons: any })
       {dns.SRV?.length > 0 && (
         <ListRow
           title="SRV"
-          list={dns.SRV.map((r: any) => `${r.name}:${r.port} (priority ${r.priority})`)}
+          list={dns.SRV.map((r: any) =>
+            t('{value} (priority {priority})', {
+              value: `${r.name}:${r.port}`,
+              priority: r.priority,
+            }),
+          )}
         />
       )}
-      {dns.TXT?.length > 0 && <Row lbl="TXT" val={`${dns.TXT.length} records`} />}
+      {dns.TXT?.length > 0 && (
+        <Row lbl="TXT" val={t('{count} records', { count: dns.TXT.length })} />
+      )}
     </Card>
   );
 };

@@ -3,6 +3,7 @@ import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { Card } from 'client/components/Form/Card';
 import Row, { Section, type RowProps } from 'client/components/Form/Row';
 import Icon from 'client/components/misc/Icon';
+import { useT } from 'client/i18n';
 import { formatNumber } from 'client/utils/format';
 
 const cardStyles = `
@@ -27,37 +28,37 @@ const ICONS: Record<string, IconDefinition> = {
 
 const LABELS: Record<string, string> = { X: 'X (Twitter)' };
 
-const verification = (profile: any): RowProps => {
+const verification = (profile: any, t: ReturnType<typeof useT>): RowProps => {
   if (profile.checked === false) {
     return {
-      val: 'Unknown',
+      val: t('Unknown'),
       status: 'info',
-      reason: 'The network could not be reached, so this account was not checked',
+      reason: t('The network could not be reached, so this account was not checked'),
     };
   }
   if (!profile.exists) {
-    return { val: false, reason: 'This handle does not resolve to a live account' };
+    return { val: false, reason: t('This handle does not resolve to a live account') };
   }
   if (profile.domainVerified) {
     return {
       val: true,
-      reason: 'The handle is this domain, so the network has verified control of it',
+      reason: t('The handle is this domain, so the network has verified control of it'),
     };
   }
   if (profile.linksBack) {
     return {
       val: true,
       reason: profile.websiteVerified
-        ? 'The profile links back to this site, and the network has verified the link'
-        : 'The profile links back to this site',
+        ? t('The profile links back to this site, and the network has verified the link')
+        : t('The profile links back to this site'),
     };
   }
   return {
     val: false,
     status: 'warning',
     reason: profile.website
-      ? `The profile links to ${profile.website} instead`
-      : 'The profile lists no website to check against',
+      ? t('The profile links to {site} instead', { site: profile.website })
+      : t('The profile lists no website to check against'),
   };
 };
 
@@ -69,6 +70,7 @@ const SocialPresenceCard = (props: {
   title: string;
   actionButtons: any;
 }): JSX.Element => {
+  const t = useT();
   const profiles: any[] = props.data || [];
   return (
     <Card heading={props.title} actionButtons={props.actionButtons} styles={cardStyles}>
@@ -83,7 +85,7 @@ const SocialPresenceCard = (props: {
           }
         >
           <Row>
-            <span className="lbl">Handle</span>
+            <span className="lbl">{t('Handle')}</span>
             <span className="val">
               <a target="_blank" rel="noreferrer" href={profile.url}>
                 {profile.avatar && <img className="avatar" src={profile.avatar} alt="" />}@
@@ -91,17 +93,21 @@ const SocialPresenceCard = (props: {
               </a>
             </span>
           </Row>
-          {profile.name && <Row lbl="Name" val={profile.name} />}
-          {profile.joined && <Row lbl="Joined" val={profile.joined} />}
+          {profile.name && <Row lbl={t('Name')} val={profile.name} />}
+          {profile.joined && <Row lbl={t('Joined')} val={profile.joined} />}
           {profile.count !== undefined && (
             <Row
-              lbl={profile.network === 'GitHub' ? 'Repositories' : 'Posts'}
+              lbl={profile.network === 'GitHub' ? t('Repositories') : t('Posts')}
               val={num(profile.count)}
             />
           )}
-          {profile.followers !== undefined && <Row lbl="Followers" val={num(profile.followers)} />}
-          {profile.website && !profile.linksBack && <Row lbl="Website" val={profile.website} />}
-          <Row lbl="Verification" term="social-verification" {...verification(profile)} />
+          {profile.followers !== undefined && (
+            <Row lbl={t('Followers')} val={num(profile.followers)} />
+          )}
+          {profile.website && !profile.linksBack && (
+            <Row lbl={t('Website')} val={profile.website} />
+          )}
+          <Row lbl={t('Verification')} term="social-verification" {...verification(profile, t)} />
         </Section>
       ))}
     </Card>

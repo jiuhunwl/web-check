@@ -4,6 +4,7 @@ import colors from 'client/styles/colors';
 import Card from 'client/components/Form/Card';
 import Heading from 'client/components/Form/Heading';
 import { formatNumber } from 'client/utils/format';
+import { useT } from 'client/i18n';
 
 export type LoadingState = 'success' | 'loading' | 'skipped' | 'error' | 'timed-out';
 
@@ -22,6 +23,15 @@ const STATE_META: Record<LoadingState, { emoji: string; color: string }> = {
   error: { emoji: '❌', color: colors.danger },
   'timed-out': { emoji: '⏸️', color: colors.warning },
   skipped: { emoji: '⏭️', color: colors.textColorTertiary },
+};
+
+/** Human readable name for a job state, translated at render time. */
+const STATE_TEXT: Record<LoadingState, string> = {
+  success: 'Success',
+  loading: 'Loading',
+  error: 'Error',
+  'timed-out': 'Timed out',
+  skipped: 'Skipped',
 };
 
 // Tally jobs by their loading state in a single pass
@@ -296,6 +306,7 @@ const REASON_LABEL: Partial<Record<LoadingState, string>> = {
 
 // One row in the details list, showing job state, time and any actions
 const JobListItem = ({ job, showJobDocs, showErrorModal }: JobListItemProps): ReactNode => {
+  const t = useT();
   const { id, name, state, timeTaken, retry, error } = job;
   const canRetry = retry && state !== 'success' && state !== 'loading';
   const reasonLabel = error ? REASON_LABEL[state] : undefined;
@@ -304,11 +315,15 @@ const JobListItem = ({ job, showJobDocs, showErrorModal }: JobListItemProps): Re
       <button type="button" className="docs" onClick={() => showJobDocs(id)}>
         {STATE_META[state].emoji} {name}
       </button>
-      <StateLabel color={STATE_META[state].color}> ({state})</StateLabel>
-      <i>{timeTaken && state !== 'loading' ? ` Took ${formatNumber(timeTaken)} ms` : ''}</i>
+      <StateLabel color={STATE_META[state].color}> ({t(STATE_TEXT[state])})</StateLabel>
+      <i>
+        {timeTaken && state !== 'loading'
+          ? ` ${t('Took {time} ms', { time: formatNumber(timeTaken) })}`
+          : ''}
+      </i>
       {canRetry && (
         <FailedJobActionButton type="button" onClick={retry}>
-          ↻ Retry
+          ↻ {t('Retry')}
         </FailedJobActionButton>
       )}
       {reasonLabel && (
@@ -316,7 +331,7 @@ const JobListItem = ({ job, showJobDocs, showErrorModal }: JobListItemProps): Re
           type="button"
           onClick={() => showErrorModal(job, state === 'skipped')}
         >
-          {reasonLabel}
+          {t(reasonLabel)}
         </FailedJobActionButton>
       )}
     </li>
@@ -331,13 +346,20 @@ interface LoadSummaryProps {
 
 // Compact one-liner shown alongside the "Show Load State" button when collapsed
 const LoadSummary = ({ jobs, elapsedMs, onOpen }: LoadSummaryProps): ReactNode => {
+  const t = useT();
   const total = jobs.length;
   const c = countByState(jobs);
   const issues = c.error + c['timed-out'] + c.skipped;
   const sec = formatNumber(elapsedMs / 1000, { digits: 1 });
   const text = c.loading
-    ? `Loading ${total - c.loading} of ${total}` + (elapsedMs < 15000 ? ` (${sec}s)` : '')
-    : `Finished ${total} lookups in ${sec}s`;
+    ? elapsedMs < 15000
+      ? t('Loading {done} of {total} ({seconds}s)', {
+          done: total - c.loading,
+          total,
+          seconds: sec,
+        })
+      : t('Loading {done} of {total}', { done: total - c.loading, total })
+    : t('Finished {count} lookups in {seconds}s', { count: total, seconds: sec });
   return (
     <span className="summary">
       {text}
@@ -345,7 +367,7 @@ const LoadSummary = ({ jobs, elapsedMs, onOpen }: LoadSummaryProps): ReactNode =
         <>
           {' · '}
           <button type="button" className="extras" onClick={onOpen}>
-            {issues} {issues === 1 ? 'issue' : 'issues'}
+            {issues === 1 ? t('{count} issue', { count: issues }) : t('{count} issues', { count: issues })}
           </button>
         </>
       )}
@@ -369,23 +391,24 @@ interface SummaryTextProps {
 
 // Heading-style summary that adapts to loading, all-success and partial-failure
 const SummaryText = ({ jobs, elapsedMs }: SummaryTextProps): ReactNode => {
+  const t = useT();
   const total = jobs.length;
   const c = countByState(jobs);
   const isDone = c.loading === 0;
   const hasIssues = c.error > 0 || c['timed-out'] > 0;
   const seconds = formatNumber(elapsedMs / 1000, { digits: 1 });
-  const elapsed = elapsedMs >= 10_000 ? `${seconds} s` : `${formatNumber(elapsedMs)} ms`;
+  const elapsed = elapsedMs >= 10_000 ? t('{seconds} s', { seconds }) : `${formatNumber(elapsedMs)} ms`;
   const chip = (k: ChipKey) =>
     c[k] > 0 && (
       <span key={k} className={k}>
-        {c[k]} {c[k] === 1 ? 'job' : 'jobs'} {CHIP_LABEL[k]}{' '}
+        {t('{count} jobs {label}', { count: c[k], label: t(CHIP_LABEL[k]) })}{' '}
       </span>
     );
   const cls = !isDone ? 'loading-info' : hasIssues ? 'error-info' : 'success-info';
   const heading = !isDone
-    ? `Loading ${total - c.loading} / ${total} Jobs`
+    ? t('Loading {done} / {total} Jobs', { done: total - c.loading, total })
     : !hasIssues
-      ? `${c.success} Jobs Completed Successfully`
+      ? t('{count} Jobs Completed Successfully', { count: c.success })
       : null;
   const keys: ChipKey[] = !isDone
     ? ['skipped', 'timed-out', 'error']
@@ -396,7 +419,7 @@ const SummaryText = ({ jobs, elapsedMs }: SummaryTextProps): ReactNode => {
     <SummaryContainer className={cls}>
       {heading && <b>{heading}</b>}
       {keys.map(chip)}
-      <span className="elapsed">{isDone ? `Done in ${elapsed}` : elapsed}</span>
+      <span className="elapsed">{isDone ? t('Done in {elapsed}', { elapsed }) : elapsed}</span>
     </SummaryContainer>
   );
 };
@@ -409,6 +432,7 @@ interface ProgressLoaderProps {
 
 // Top-of-results progress bar with collapsible per-job detail and error modals
 const ProgressLoader = ({ loadStatus, showModal, showJobDocs }: ProgressLoaderProps): ReactNode => {
+  const t = useT();
   const [hideLoader, setHideLoader] = useState(true);
   const [elapsedMs, setElapsedMs] = useState(0);
   const percentages = stateToPercent(loadStatus);
@@ -422,13 +446,19 @@ const ProgressLoader = ({ loadStatus, showModal, showJobDocs }: ProgressLoaderPr
   }, [isDone]);
 
   const showErrorModal = (job: LoadingJob, isInfo?: boolean) => {
-    const detailsLabel = job.state === 'skipped' ? 'Reason:' : 'Server response:';
+    const detailsLabel = job.state === 'skipped' ? t('Reason:') : t('Server response:');
+    const state = t(STATE_TEXT[job.state]);
     showModal(
       <ErrorModalContent>
-        <Heading as="h3">Details for {job.name}</Heading>
+        <Heading as="h3">{t('Details for {name}', { name: job.name })}</Heading>
         <p>
-          The {job.name} job ended with state '{job.state}'
-          {job.timeTaken !== undefined ? ` after ${formatNumber(job.timeTaken)} ms` : ''}.{' '}
+          {job.timeTaken !== undefined
+            ? t("The {name} job ended with state '{state}' after {time} ms.", {
+                name: job.name,
+                state,
+                time: formatNumber(job.timeTaken),
+              })
+            : t("The {name} job ended with state '{state}'.", { name: job.name, state })}{' '}
           {detailsLabel}
         </p>
         <pre className={isInfo ? 'info' : 'error'}>{job.error}</pre>
@@ -447,7 +477,7 @@ const ProgressLoader = ({ loadStatus, showModal, showJobDocs }: ProgressLoaderPr
               onOpen={() => setHideLoader(false)}
             />
             <ShowLoadStateButton type="button" onClick={() => setHideLoader(false)}>
-              Show Load State
+              {t('Show Load State')}
             </ShowLoadStateButton>
           </ReShowRow>
         </div>
@@ -461,13 +491,13 @@ const ProgressLoader = ({ loadStatus, showModal, showJobDocs }: ProgressLoaderPr
                   key={`progress-bar-${state}`}
                   color={STATE_META[state].color}
                   width={percentages[state]}
-                  title={`${state} (${Math.round(percentages[state])}%)`}
+                  title={`${t(STATE_TEXT[state])} (${Math.round(percentages[state])}%)`}
                 />
               ))}
             </ProgressBarContainer>
             <SummaryText jobs={loadStatus} elapsedMs={elapsedMs} />
             <Details>
-              <summary>Show Details</summary>
+              <summary>{t('Show Details')}</summary>
               <ul>
                 {loadStatus.map((job) => (
                   <JobListItem
@@ -480,18 +510,19 @@ const ProgressLoader = ({ loadStatus, showModal, showJobDocs }: ProgressLoaderPr
               </ul>
               {loadStatus.some((j) => j.state === 'error') && (
                 <p className="error">
-                  <b>Check the browser console for logs and more info</b>
+                  <b>{t('Check the browser console for logs and more info')}</b>
                   <br />
-                  It's normal for some jobs to fail, either because the host doesn't return the
-                  required info, or restrictions in the lambda function, or hitting an API limit.
+                  {t(
+                    "It's normal for some jobs to fail, either because the host doesn't return the required info, or restrictions in the lambda function, or hitting an API limit.",
+                  )}
                 </p>
               )}
               <AboutPageLink href="/checks" target="_blank" rel="noreferrer">
-                Learn More about Web-Check
+                {t('Learn More about Web-Check')}
               </AboutPageLink>
             </Details>
             <DismissButton type="button" onClick={() => setHideLoader(true)}>
-              Dismiss
+              {t('Dismiss')}
             </DismissButton>
           </LoadCard>
         </div>

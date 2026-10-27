@@ -16,7 +16,7 @@ const skippable = checkIds.filter((id) => id !== 'get-ip');
     <li>
       <label>
         <input type="checkbox" name={name} value={id} />
-        {checks[id].title}
+        <span data-i18n={`check:${id}.title`}>{checks[id].title}</span>
       </label>
     </li>
   ))}

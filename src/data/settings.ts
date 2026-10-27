@@ -44,9 +44,14 @@ export const sections: Section[] = [
       {
         key: 'language',
         label: 'Language',
+        hint: 'Applies to the interface, and is remembered on this device',
         control: 'select',
-        options: [{ value: 'en', label: 'English' }],
-        default: 'en',
+        options: [
+          { value: 'auto', label: 'Match browser' },
+          { value: 'en', label: 'English' },
+          { value: 'zh-CN', label: '中文（简体）' },
+        ],
+        default: 'auto',
       },
       {
         key: 'locale',

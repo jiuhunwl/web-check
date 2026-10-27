@@ -22,7 +22,14 @@ const authorName = 'Alicia Sykes';
 const authorLink = 'https://aliciasykes.com';
 const currentYear = new Date().getFullYear();
 
-const linkGroups = [
+interface FooterLink {
+  label: string;
+  href: string;
+  key?: string;
+  vars?: Record<string, string | number>;
+}
+
+const linkGroups: { title: string; links: FooterLink[] }[] = [
   {
     title: 'Tools',
     links: categoryIds.map((id) => ({ label: toolName(id), href: `/${id}` })),
@@ -30,7 +37,12 @@ const linkGroups = [
   {
     title: 'Docs',
     links: [
-      { label: `All ${checkIds.length} checks`, href: '/checks' },
+      {
+        label: `All ${checkIds.length} checks`,
+        key: 'All {count} checks',
+        vars: { count: checkIds.length },
+        href: '/checks',
+      },
       { label: 'Glossary', href: '/glossary' },
       { label: 'Self-hosting', href: '/self-hosted-setup' },
       { label: 'API', href: '/web-check-api' },
@@ -46,6 +58,15 @@ const linkGroups = [
     ],
   },
 ];
+
+// The inline links travel as HTML, so a translation can move them around the sentence
+const sourceVars = { repo: `<a href="${github}" target="_blank">${repo}</a>` };
+const licenseVars = {
+  project: `<a href="${aboutLink}">${projectName}</a>`,
+  license: `<a href="${licenseLink}" target="_blank">${licenseText}</a>`,
+  author: `<a href="${authorLink}" target="_blank">${authorName}</a>`,
+  year: currentYear,
+};
 ---
 
 <footer>
@@ -56,18 +77,23 @@ const linkGroups = [
           <Logo />
           {projectName}
         </a>
-        <p>
+        <p data-i18n="The all-in-one OSINT and security tool, for revealing the inner workings of any website.">
           The all-in-one OSINT and security tool, for revealing the inner workings of any website.
         </p>
       </div>
-      <nav aria-label="Footer">
+      <nav aria-label="Footer" data-i18n-aria-label="Footer">
         {linkGroups.map((group) => (
           <div>
-            <h2>{group.title}</h2>
+            <h2 data-i18n={group.title}>{group.title}</h2>
             <ul>
               {group.links.map((link) => (
                 <li>
-                  <a href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined}>
+                  <a
+                    href={link.href}
+                    target={link.href.startsWith('http') ? '_blank' : undefined}
+                    data-i18n={link.key ?? link.label}
+                    data-i18n-vars={link.vars ? JSON.stringify(link.vars) : undefined}
+                  >
                     {link.label}
                   </a>
                 </li>
@@ -79,13 +105,16 @@ const linkGroups = [
     </div>
   )}
   <div class="bar">
-    <p>
+    <p data-i18n-html="View source at {repo}" data-i18n-vars={JSON.stringify(sourceVars)}>
       View source at{' '}
       <a href={github} target="_blank">
         {repo}
       </a>
     </p>
-    <p>
+    <p
+      data-i18n-html="{project} is licensed under {license} - © {author} {year}"
+      data-i18n-vars={JSON.stringify(licenseVars)}
+    >
       <a href={aboutLink}>{projectName}</a> is licensed under{' '}
       <a href={licenseLink} target="_blank">
         {licenseText}

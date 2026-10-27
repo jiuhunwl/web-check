@@ -1,4 +1,5 @@
 import type { Analyzer, Severity } from '../types';
+import { t } from '@/i18n';
 
 // Port -> [severity, description]. Anything not listed is informational
 export const RISKY: Record<number, [Severity, string]> = {
@@ -22,8 +23,8 @@ const ports: Analyzer = (d) => {
     if (known) {
       out.push({
         severity: known[0],
-        title: `Port ${port} open: ${known[1]}`,
-        detail: 'Close it or restrict access by firewall if not required',
+        title: t('Port {port} open: {risk}', { port, risk: t(known[1]) }),
+        detail: t('Close it or restrict access by firewall if not required'),
       });
     }
   }

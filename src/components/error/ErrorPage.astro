@@ -22,16 +22,20 @@ const links = [
 <PageLayout title={`${lead} ${accent} | Web Check`} description={message}>
   <section class="error">
     <code class="status">
-      HTTP/1.1 {status} {statusText}
+      HTTP/1.1 {status} <span data-i18n={statusText}>{statusText}</span>
     </code>
-    <h1>
+    <h1 data-i18n-html={`${lead} <em>${accent}</em>`}>
       {lead} <em>{accent}</em>
     </h1>
-    <p class="message">{message}</p>
+    <p class="message" data-i18n={message}>
+      {message}
+    </p>
     <ul class="links">
       {links.map((link) => (
         <li>
-          <a href={link.href}>{link.label}</a>
+          <a href={link.href} data-i18n={link.label}>
+            {link.label}
+          </a>
         </li>
       ))}
     </ul>

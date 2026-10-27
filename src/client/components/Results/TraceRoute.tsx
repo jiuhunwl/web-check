@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import colors from 'client/styles/colors';
 import { Card } from 'client/components/Form/Card';
+import { useT } from 'client/i18n';
 
 const RouteRow = styled.div`
   text-align: center;
@@ -31,6 +32,7 @@ const RouteTimings = styled.div`
 `;
 
 const TraceRouteCard = (props: { data: any; title: string; actionButtons: any }): JSX.Element => {
+  const t = useT();
   const traceRouteResponse = props.data;
   const routes = traceRouteResponse.result;
   return (
@@ -43,8 +45,10 @@ const TraceRouteCard = (props: { data: any; title: string; actionButtons: any })
             <RouteTimings>
               {route[Object.keys(route)[0]].map((time: any, packetIndex: number) => (
                 <p className="times" key={`timing-${packetIndex}-${time}`}>
-                  {route[Object.keys(route)[0]].length > 1 && <>Packet #{packetIndex + 1}:</>}
-                  Took {time} ms
+                  {route[Object.keys(route)[0]].length > 1 && (
+                    <>{t('Packet #{packet}:', { packet: packetIndex + 1 })} </>
+                  )}
+                  {t('Took {time} ms', { time })}
                 </p>
               ))}
               <p className="arrow">↓</p>
@@ -52,7 +56,9 @@ const TraceRouteCard = (props: { data: any; title: string; actionButtons: any })
           </RouteRow>
         ))}
       <RouteTimings>
-        <p className="completed">Round trip completed in {traceRouteResponse.timeTaken} ms</p>
+        <p className="completed">
+          {t('Round trip completed in {time} ms', { time: traceRouteResponse.timeTaken })}
+        </p>
       </RouteTimings>
     </Card>
   );

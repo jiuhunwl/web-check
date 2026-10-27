@@ -12,7 +12,9 @@ const { options, ...attrs } = Astro.props;
 <span class="select">
   <select {...attrs}>
     {options.map(({ value, label }) => (
-      <option value={value}>{label}</option>
+      <option value={value} data-i18n={label}>
+        {label}
+      </option>
     ))}
   </select>
   <Icon name="chevron" size={0.7} />

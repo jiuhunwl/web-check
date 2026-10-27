@@ -1,14 +1,17 @@
 import { Card, Note } from 'client/components/Form/Card';
 import Row from 'client/components/Form/Row';
+import { useT } from 'client/i18n';
 import { formatNumber } from 'client/utils/format';
+
+type Translate = (key: string, vars?: Record<string, string | number | undefined | null>) => string;
 
 // Fixed decimals, with the locale's separators
 const fixed = (n: number, digits: number) => formatNumber(n, { digits });
 
-const formatBytes = (n: number): string => {
+const formatBytes = (n: number, t: Translate): string => {
   if (n >= 1048576) return `${fixed(n / 1048576, 2)} MB`;
   if (n >= 1024) return `${fixed(n / 1024, 2)} KB`;
-  return `${fixed(n, 0)} bytes`;
+  return t('{value} bytes', { value: fixed(n, 0) });
 };
 
 const formatGrams = (g: number): string => {
@@ -24,27 +27,28 @@ const formatKwh = (kwh: number): string => {
 };
 
 const CarbonCard = (props: { data: any; title: string; actionButtons: any }): JSX.Element => {
+  const t = useT();
   const carbons = props.data.statistics;
   const cleanerThan = props.data.cleanerThan;
 
   return (
     <Card heading={props.title} actionButtons={props.actionButtons}>
-      {!carbons?.adjustedBytes && <p>Unable to calculate carbon footprint for host</p>}
+      {!carbons?.adjustedBytes && <p>{t('Unable to calculate carbon footprint for host')}</p>}
       {carbons?.adjustedBytes > 0 && (
         <>
           {props.data.bytes > 0 && (
-            <Row lbl="HTML Initial Size" val={formatBytes(props.data.bytes)} />
+            <Row lbl={t('HTML Initial Size')} val={formatBytes(props.data.bytes, t)} />
           )}
-          <Row lbl="Adjusted Transfer Size" val={formatBytes(carbons.adjustedBytes)} />
-          <Row lbl="CO2 for Initial Load" val={formatGrams(carbons.co2.grid.grams)} />
-          <Row lbl="Energy Usage for Load" val={formatKwh(carbons.energy)} />
+          <Row lbl={t('Adjusted Transfer Size')} val={formatBytes(carbons.adjustedBytes, t)} />
+          <Row lbl={t('CO2 for Initial Load')} val={formatGrams(carbons.co2.grid.grams)} />
+          <Row lbl={t('Energy Usage for Load')} val={formatKwh(carbons.energy)} />
           {cleanerThan > 0 && (
-            <Row lbl="Cleaner than average page (est.)" val={`${cleanerThan}%`} />
+            <Row lbl={t('Cleaner than average page (est.)')} val={`${cleanerThan}%`} />
           )}
         </>
       )}
       <Note>
-        Calculated using the{' '}
+        {t('Calculated using the')}{' '}
         <a
           href="https://sustainablewebdesign.org/estimating-digital-emissions"
           target="_blank"

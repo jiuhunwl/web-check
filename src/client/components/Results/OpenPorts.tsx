@@ -1,6 +1,7 @@
 import { Card, Note } from 'client/components/Form/Card';
 import Row from 'client/components/Form/Row';
 import { toStatus } from 'client/components/misc/Icon';
+import { useT } from 'client/i18n';
 import { RISKY } from 'client/analysis/rules/ports';
 
 // The service usually behind each port the check scans
@@ -38,6 +39,7 @@ const SERVICES: Record<number, string> = {
 };
 
 const OpenPortsCard = (props: { data: any; title: string; actionButtons: any }): JSX.Element => {
+  const t = useT();
   const portData = props.data;
   return (
     <Card heading={props.title} actionButtons={props.actionButtons}>
@@ -47,7 +49,7 @@ const OpenPortsCard = (props: { data: any; title: string; actionButtons: any }):
           <Row
             key={port}
             lbl={String(port)}
-            val={SERVICES[port] || 'Unknown'}
+            val={SERVICES[port] || t('Unknown')}
             status={severity && toStatus(severity)}
             reason={risk}
             term="open-port"
@@ -55,7 +57,7 @@ const OpenPortsCard = (props: { data: any; title: string; actionButtons: any }):
         );
       })}
       <Note>
-        Unable to establish connections to:
+        {t('Unable to establish connections to:')}
         <br />
         {portData.failedPorts.join(', ')}
       </Note>

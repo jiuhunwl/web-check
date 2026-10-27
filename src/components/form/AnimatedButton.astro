@@ -7,7 +7,9 @@ const { label = 'Analyze URL' } = Astro.props;
 ---
 
 <div class="button">
-  <button type="submit">{label}</button>
+  <button type="submit" data-i18n={label}>
+    {label}
+  </button>
   <slot />
 </div>
 

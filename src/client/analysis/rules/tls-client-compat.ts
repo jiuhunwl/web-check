@@ -1,4 +1,5 @@
 import type { Analyzer } from '../types';
+import { t } from '@/i18n';
 
 interface Sim {
   client?: { name?: string; version?: string };
@@ -25,12 +26,15 @@ const tlsClientCompat: Analyzer = (d) => {
     .slice(0, 5)
     .map((s) => `${s.client?.name || 'client'} ${s.client?.version || ''}`.trim())
     .join(', ');
-  const more = fails.length > 5 ? ` (+${fails.length - 5} more)` : '';
+  const more = fails.length > 5 ? t(' (+{count} more)', { count: fails.length - 5 }) : '';
   return [
     {
       severity: 'warning',
-      title: `${fails.length} simulated client(s) cannot connect`,
-      detail: `${sample}${more}. Drop legacy ciphers/protocols only after weighing reach`,
+      title: t('{count} simulated client(s) cannot connect', { count: fails.length }),
+      detail: t('{sample}{more}. Drop legacy ciphers/protocols only after weighing reach', {
+        sample,
+        more,
+      }),
     },
   ];
 };

@@ -22,12 +22,18 @@ const description =
   ]}
 >
   <section class="intro">
-    <h1>Every check, explained</h1>
-    <p class="tagline">
+    <h1 data-i18n="Every check, explained">Every check, explained</h1>
+    <p
+      class="tagline"
+      data-i18n="Web Check runs {count} checks across {categories} categories. Each one is documented below: what it looks at, why it matters, and the standards behind it."
+      data-i18n-vars={JSON.stringify({ count: checkIds.length, categories: categoryIds.length })}
+    >
       Web Check runs {checkIds.length} checks across {categoryIds.length} categories. Each one is
       documented below: what it looks at, why it matters, and the standards behind it.
     </p>
-    <p class="caveat">{checksIntro}</p>
+    <p class="caveat" data-i18n={checksIntro}>
+      {checksIntro}
+    </p>
     <ScanForm label="Enter a URL to run the full report" />
   </section>
 

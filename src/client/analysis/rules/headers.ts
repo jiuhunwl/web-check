@@ -1,4 +1,5 @@
 import type { Analyzer } from '../types';
+import { t } from '@/i18n';
 
 export const LEAK_HEADERS = ['x-powered-by', 'server', 'x-aspnet-version', 'x-aspnetmvc-version'];
 
@@ -10,8 +11,8 @@ const headers: Analyzer = (d) => {
     if (val) {
       out.push({
         severity: 'info',
-        title: `Server discloses ${key}`,
-        detail: `Value: ${String(val).slice(0, 80)}`,
+        title: t('Server discloses {header}', { header: key }),
+        detail: t('Value: {value}', { value: String(val).slice(0, 80) }),
       });
     }
   }

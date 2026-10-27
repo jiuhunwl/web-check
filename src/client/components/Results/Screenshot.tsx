@@ -1,4 +1,5 @@
 import { Card } from 'client/components/Form/Card';
+import { useT } from 'client/i18n';
 
 const cardStyles = `
   overflow: auto;
@@ -16,14 +17,15 @@ const ScreenshotCard = (props: {
   title: string;
   actionButtons: any;
 }): JSX.Element => {
+  const t = useT();
   const screenshot = props.data;
   return (
     <Card heading={props.title} actionButtons={props.actionButtons} styles={cardStyles}>
       {screenshot.image && (
-        <img src={`data:image/png;base64,${screenshot.image}`} alt="Full page screenshot" />
+        <img src={`data:image/png;base64,${screenshot.image}`} alt={t('Full page screenshot')} />
       )}
       {!screenshot.image && screenshot.data && (
-        <img src={screenshot.data} alt="Full page screenshot" />
+        <img src={screenshot.data} alt={t('Full page screenshot')} />
       )}
     </Card>
   );

@@ -38,6 +38,14 @@ const pageDescription = description ?? siteInfo.description;
 const pageKeywords = keywords ?? siteInfo.keywords;
 
 const { site, author, twitter, analytics, themeColor } = siteInfo;
+
+// Split "DNS Records | Web Check" so only the page name is translated, and the
+// brand suffix stays as it is in both languages
+const titleSuffix = ' | Web Check';
+const titleKey = pageTitle.endsWith(titleSuffix)
+  ? pageTitle.slice(0, -titleSuffix.length)
+  : pageTitle;
+const titleAfter = pageTitle.endsWith(titleSuffix) ? titleSuffix : '';
 const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', site).href;
 const ogImage = `${site}/banner.png`;
 
@@ -60,7 +68,7 @@ const makeBreadcrumbs = () => {
 ---
 
 <!-- Core info -->
-<title>{pageTitle}</title>
+<title data-i18n={titleKey} data-i18n-after={titleAfter}>{pageTitle}</title>
 <meta name="description" content={pageDescription} />
 {pageKeywords && <meta name="keywords" content={pageKeywords} />}
 <meta name="author" content={author} />

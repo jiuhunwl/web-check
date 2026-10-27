@@ -4,6 +4,7 @@ import keys from 'client/utils/get-keys';
 import type { AddressType } from 'client/utils/address-type-checker';
 import type { LoadingState } from 'client/components/misc/ProgressBar';
 import type { JobSpec, JobContext, JobsState } from 'client/jobs/types';
+import { t } from '@/i18n';
 
 type Action =
   | { type: 'start'; cardIds: string[] }
@@ -52,7 +53,7 @@ const reducer = (s: JobsState, a: Action): JobsState => {
 
 const isTimeout = (msg = '') => /timed[- ]?out/i.test(msg);
 
-const noIpMsg = "Skipped, because the target's IP address could not be found";
+const noIpMsg = () => t("Skipped, because the target's IP address could not be found");
 
 const apiBase = (import.meta.env.PUBLIC_API_ENDPOINT || '/api') as string;
 
@@ -102,7 +103,7 @@ const useJobs = (address: string, addressType: AddressType, jobs: JobSpec[]) => 
               return;
             }
             if (raw?.error) setIpLookupError(raw.error);
-            skipIpJobs(raw?.skipped || noIpMsg);
+            skipIpJobs(raw?.skipped || noIpMsg());
             return;
           }
           if (raw?.skipped) {
@@ -122,9 +123,9 @@ const useJobs = (address: string, addressType: AddressType, jobs: JobSpec[]) => 
         .catch((err: any) => {
           if (controller.signal.aborted || err?.name === 'AbortError') return;
           const timeTaken = Date.now() - startTime;
-          const message = err?.message || 'Unknown error';
+          const message = err?.message || t('Unknown error');
           if (job.id === 'get-ip') {
-            skipIpJobs(noIpMsg);
+            skipIpJobs(noIpMsg());
             return;
           }
           const outcome = isTimeout(message) ? 'timed-out' : 'error';
@@ -152,11 +153,11 @@ const useJobs = (address: string, addressType: AddressType, jobs: JobSpec[]) => 
       const allowed = job.expectedAddressTypes;
       if (allowed && !allowed.includes(addressType)) {
         if (addressType === 'ipV4' || addressType === 'ipV6') {
-          return 'This check requires a domain name and cannot be run against an IP address';
+          return t('This check requires a domain name and cannot be run against an IP address');
         }
-        return `This check is only available for ${allowed.join(', ')} input`;
+        return t('This check is only available for {types} input', { types: allowed.join(', ') });
       }
-      return 'This check is not applicable for the current input';
+      return t('This check is not applicable for the current input');
     },
     [addressType],
   );
@@ -164,7 +165,7 @@ const useJobs = (address: string, addressType: AddressType, jobs: JobSpec[]) => 
   // Initial fan-out: fire non-IP jobs immediately, mark unsupported as skipped
   useEffect(() => {
     if (keys.disableEverything) {
-      const reason = 'Web-Check has been temporarily disabled on this instance';
+      const reason = t('Web-Check has been temporarily disabled on this instance');
       jobs.forEach((j) => skipJob(j, reason));
       return;
     }
@@ -232,7 +233,7 @@ const useJobs = (address: string, addressType: AddressType, jobs: JobSpec[]) => 
         type: 'error',
         cardIds: stuck,
         outcome: 'timed-out',
-        error: 'Client-side timeout reached',
+        error: t('Client-side timeout reached'),
         timeTaken: Date.now() - startTime,
       });
       stuck.forEach((id) => {

@@ -1,10 +1,13 @@
 import { Card } from 'client/components/Form/Card';
 import Row, { type RowProps } from 'client/components/Form/Row';
 import { toStatus, type Status } from 'client/components/misc/Icon';
+import { useT } from 'client/i18n';
 import { gradeSeverity } from 'client/analysis/rules/tls-security-audit';
 import { MIN_MAX_AGE } from 'client/analysis/rules/hsts';
 import { formatNumber } from 'client/utils/format';
 import type { TermId } from '@/data/glossary';
+
+type Translate = ReturnType<typeof useT>;
 
 const yesNo = (v: any, no: Status = 'error'): RowProps => ({
   val: !!v,
@@ -14,10 +17,10 @@ const yesNo = (v: any, no: Status = 'error'): RowProps => ({
 // A yes or no where yes is the risk
 const risk = (v: any): RowProps => ({ val: !!v, status: v ? 'warning' : 'pass' });
 
-const fwdSecrecy = (n: number): RowProps => {
-  if (n & 4) return { val: 'With all browsers', status: 'pass' };
-  if (n & 2) return { val: 'With most modern browsers', status: 'warning' };
-  if (n & 1) return { val: 'Limited', status: 'warning' };
+const fwdSecrecy = (n: number, t: Translate): RowProps => {
+  if (n & 4) return { val: t('With all browsers'), status: 'pass' };
+  if (n & 2) return { val: t('With most modern browsers'), status: 'warning' };
+  if (n & 1) return { val: t('Limited'), status: 'warning' };
   return { val: false };
 };
 
@@ -29,45 +32,52 @@ const HSTS_PROBLEMS: Record<string, string> = {
 };
 
 // The HSTS policy SSL Labs found, held to the same one year max-age as the HSTS card
-const hsts = (policy?: any): RowProps | null => {
+const hsts = (policy: any, t: Translate): RowProps | null => {
   if (policy?.status !== 'present') {
     const problem = HSTS_PROBLEMS[policy?.status];
-    return problem ? { val: problem, status: 'error' } : null;
+    return problem ? { val: t(problem), status: 'error' } : null;
   }
   const days = Math.round((policy.maxAge || 0) / 86400);
   const sub = policy.includeSubDomains ? ' + includeSubDomains' : '';
-  const val = `${formatNumber(days)} day${days === 1 ? '' : 's'}${sub}`;
+  const count = formatNumber(days);
+  const val = `${t(days === 1 ? '{count} day' : '{count} days', { count })}${sub}`;
   if (policy.maxAge >= MIN_MAX_AGE) return { val, status: 'pass' };
-  return { val, status: 'warning', reason: 'Under the one year the HSTS preload list needs' };
+  return {
+    val,
+    status: 'warning',
+    reason: t('Under the one year the HSTS preload list needs'),
+  };
 };
 
 // renegSupport bits: 1 insecure client-init, 2 secure, 4 secure client-init, 8 required
-const reneg = (n?: number): RowProps => {
-  if (!n) return { val: 'Not supported', status: 'pass' };
-  if (n & 1) return { val: 'Insecure client-initiated', status: 'warning' };
+const reneg = (n: number | undefined, t: Translate): RowProps => {
+  if (!n) return { val: t('Not supported'), status: 'pass' };
+  if (n & 1) return { val: t('Insecure client-initiated'), status: 'warning' };
   const flags = [];
-  if (n & 2) flags.push('secure');
-  if (n & 4) flags.push('secure client-initiated');
-  if (n & 8) flags.push('server-required');
-  return { val: flags.join(', ') || 'unknown', status: 'pass' };
+  if (n & 2) flags.push(t('secure'));
+  if (n & 4) flags.push(t('secure client-initiated'));
+  if (n & 8) flags.push(t('server-required'));
+  return { val: flags.join(', ') || t('unknown'), status: 'pass' };
 };
 
-const sessionResumption = (n?: number): RowProps => {
-  if (n === 2) return { val: 'Supported', status: 'pass' };
-  if (n === 1) return { val: 'IDs returned, not resumed', status: 'warning' };
-  return { val: 'Not enabled', status: 'info' };
+const sessionResumption = (n: number | undefined, t: Translate): RowProps => {
+  if (n === 2) return { val: t('Supported'), status: 'pass' };
+  if (n === 1) return { val: t('IDs returned, not resumed'), status: 'warning' };
+  return { val: t('Not enabled'), status: 'info' };
 };
 
-const compression = (n?: number): RowProps =>
-  n ? { val: 'Supported (CRIME risk)', status: 'warning' } : { val: 'Disabled', status: 'pass' };
+const compression = (n: number | undefined, t: Translate): RowProps =>
+  n
+    ? { val: t('Supported (CRIME risk)'), status: 'warning' }
+    : { val: t('Disabled'), status: 'pass' };
 
 // Each entry returns the row's value, or null to hide the row entirely, and its glossary term
-const POSTURE: Array<[string, (d: any) => RowProps | null, TermId?]> = [
-  ['Forward Secrecy', (d) => fwdSecrecy(d.forwardSecrecy), 'forward-secrecy'],
-  ['HSTS', (d) => hsts(d.hstsPolicy), 'strict-transport-security'],
-  ['Session Resumption', (d) => sessionResumption(d.sessionResumption), 'session-resumption'],
+const POSTURE: Array<[string, (d: any, t: Translate) => RowProps | null, TermId?]> = [
+  ['Forward Secrecy', (d, t) => fwdSecrecy(d.forwardSecrecy, t), 'forward-secrecy'],
+  ['HSTS', (d, t) => hsts(d.hstsPolicy, t), 'strict-transport-security'],
+  ['Session Resumption', (d, t) => sessionResumption(d.sessionResumption, t), 'session-resumption'],
   ['OCSP Stapling', (d) => yesNo(d.ocspStapling, 'info'), 'ocsp-stapling'],
-  ['Renegotiation', (d) => reneg(d.renegSupport), 'renegotiation'],
+  ['Renegotiation', (d, t) => reneg(d.renegSupport, t), 'renegotiation'],
   [
     'Fallback SCSV (downgrade protection)',
     (d) => yesNo(d.fallbackScsv, 'warning'),
@@ -78,7 +88,7 @@ const POSTURE: Array<[string, (d: any) => RowProps | null, TermId?]> = [
   ['ChaCha20 Preferred', (d) => yesNo(d.chaCha20Preference, 'info'), 'chacha20'],
   ['AEAD Cipher Support', (d) => yesNo(d.supportsAead), 'aead'],
   ['Legacy CBC Cipher Support', (d) => risk(d.supportsCBC), 'cbc-ciphers'],
-  ['TLS Compression', (d) => compression(d.compressionMethods), 'tls-compression'],
+  ['TLS Compression', (d, t) => compression(d.compressionMethods, t), 'tls-compression'],
   ['Static DH Key Reuse', (d) => risk(d.dhYsReuse), 'key-exchange-reuse'],
   ['Weak DH Primes', (d) => risk(d.dhUsesKnownPrimes === 2), 'weak-dh-primes'],
   ['Static ECDH Parameter Reuse', (d) => risk(d.ecdhParameterReuse), 'key-exchange-reuse'],
@@ -103,12 +113,16 @@ const VULNS: Array<[string, string, TermId, Record<number, string>?]> = [
 ];
 
 // A test result, where SSL Labs numbers mean 1 safe, below 1 untested, and above 1 vulnerable
-const vulnerability = (result: unknown, others: Record<number, string> = {}): RowProps | null => {
+const vulnerability = (
+  result: unknown,
+  others: Record<number, string> = {},
+  t: Translate,
+): RowProps | null => {
   if (result == null) return null;
-  if (typeof result === 'boolean') return { val: !result, yes: 'Safe', no: 'Vulnerable' };
-  if (typeof result !== 'number' || result < 1) return { val: 'Not tested' };
-  if (others[result]) return { val: others[result], status: 'warning' };
-  return { val: result === 1, yes: 'Safe', no: 'Vulnerable' };
+  if (typeof result === 'boolean') return { val: !result, yes: t('Safe'), no: t('Vulnerable') };
+  if (typeof result !== 'number' || result < 1) return { val: t('Not tested') };
+  if (others[result]) return { val: t(others[result]), status: 'warning' };
+  return { val: result === 1, yes: t('Safe'), no: t('Vulnerable') };
 };
 
 const TlsSecurityAuditCard = (props: {
@@ -116,6 +130,7 @@ const TlsSecurityAuditCard = (props: {
   title: string;
   actionButtons: any;
 }): JSX.Element | null => {
+  const t = useT();
   const ep = props.data?.endpoints?.[0];
   if (!ep?.details) return null;
   const d = ep.details;
@@ -124,22 +139,22 @@ const TlsSecurityAuditCard = (props: {
     <Card heading={props.title} actionButtons={props.actionButtons}>
       {ep.grade && (
         <Row
-          lbl="Grade"
+          lbl={t('Grade')}
           val={ep.grade}
           status={toStatus(gradeSeverity(ep.grade))}
           term="ssl-labs-grade"
         />
       )}
       {ep.gradeTrustIgnored && ep.gradeTrustIgnored !== ep.grade && (
-        <Row lbl="Grade (trust ignored)" val={ep.gradeTrustIgnored} />
+        <Row lbl={t('Grade (trust ignored)')} val={ep.gradeTrustIgnored} />
       )}
-      {protocols && <Row lbl="Protocols" val={protocols} />}
+      {protocols && <Row lbl={t('Protocols')} val={protocols} />}
       {POSTURE.map(([label, getter, term]) => {
-        const row = getter(d);
-        return row && <Row key={label} lbl={label} term={term} {...row} />;
+        const row = getter(d, t);
+        return row && <Row key={label} lbl={t(label)} term={term} {...row} />;
       })}
       {VULNS.map(([key, label, term, others]) => {
-        const row = vulnerability(d[key], others);
+        const row = vulnerability(d[key], others, t);
         return row && <Row key={key} lbl={label} term={term} {...row} />;
       })}
     </Card>

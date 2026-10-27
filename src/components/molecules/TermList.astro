@@ -13,11 +13,22 @@ const { terms, linkToGlossary = false } = Astro.props;
 <dl>
   {terms.map(([id, term]) => (
     <div id={linkToGlossary ? undefined : id}>
-      <dt>{linkToGlossary ? <a href={`/glossary#${id}`}>{term.title}</a> : term.title}</dt>
+      <dt>
+        {linkToGlossary ? (
+          <a href={`/glossary#${id}`} data-i18n={`term:${id}.title`}>
+            {term.title}
+          </a>
+        ) : (
+          <span data-i18n={`term:${id}.title`}>{term.title}</span>
+        )}
+      </dt>
       <dd>
-        {term.definition}
+        <span data-i18n={`term:${id}.definition`}>{term.definition}</span>
         {!linkToGlossary && term.check && (
-          <a href={`/${term.check}`}>See the {checks[term.check].title} check</a>
+          <a href={`/${term.check}`}>
+            <span data-i18n="Related check:">Related check:</span>{' '}
+            <span data-i18n={`check:${term.check}.title`}>{checks[term.check].title}</span>
+          </a>
         )}
       </dd>
     </div>

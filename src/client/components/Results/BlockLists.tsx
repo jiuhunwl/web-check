@@ -1,7 +1,9 @@
 import { Card } from 'client/components/Form/Card';
 import Row from 'client/components/Form/Row';
+import { useT } from 'client/i18n';
 
 const BlockListsCard = (props: { data: any; title: string; actionButtons: any }): JSX.Element => {
+  const t = useT();
   const blockLists = props.data.blocklists;
   return (
     <Card heading={props.title} actionButtons={props.actionButtons}>
@@ -10,8 +12,8 @@ const BlockListsCard = (props: { data: any; title: string; actionButtons: any })
           title={blocklist.serverIp}
           lbl={blocklist.server}
           val={!blocklist.isBlocked}
-          yes="Not Blocked"
-          no="Blocked"
+          yes={t('Not Blocked')}
+          no={t('Blocked')}
           term="dns-blocklist"
           key={`blocklist-${blockIndex}-${blocklist.serverIp}`}
         />

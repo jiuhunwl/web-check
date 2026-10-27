@@ -1,4 +1,5 @@
 import type { Analyzer } from '../types';
+import { t } from '@/i18n';
 
 type Rule = { lbl: string; val: string };
 
@@ -48,8 +49,8 @@ const robotsTxt: Analyzer = (d) => {
     return [
       {
         severity: 'warning',
-        title: 'robots.txt blocks Google from the entire site',
-        detail: "Confirm this is intentional, otherwise the site won't appear in Google search",
+        title: t('robots.txt blocks Google from the entire site'),
+        detail: t("Confirm this is intentional, otherwise the site won't appear in Google search"),
       },
     ];
   }

@@ -20,13 +20,19 @@ const scanCheck = info.categories.length ? check : undefined;
 const scanLabel = scanCheck
   ? `Enter a URL to run the ${info.title} check`
   : 'Enter a URL to run the full report';
+const scanLabelI18n = scanCheck ? 'Enter a URL to run the {check} check' : undefined;
+const scanLabelVars = scanCheck ? { check: info.title } : undefined;
 
 // Resources are either a bare URL or a titled link
 const resources = info.resources.map((resource) =>
   typeof resource === 'string' ? { title: resource, link: resource } : resource,
 );
 
-const tags = info.categories.map((c) => ({ label: categories[c].label, href: `/${c}` }));
+const tags = info.categories.map((c) => ({
+  label: categories[c].label,
+  href: `/${c}`,
+  key: `category:${c}.label`,
+}));
 const labels = tags.map((tag) => tag.label);
 const keywords = [info.title, ...labels, 'website check'].join(', ').toLowerCase();
 
@@ -46,25 +52,34 @@ const terms = Object.entries(glossary).filter(([, term]) => term.check === check
 >
   <section class="hero">
     <p class="crumbs">
-      <a href="/checks">All checks</a>
+      <a href="/checks" data-i18n="All checks">
+        All checks
+      </a>
     </p>
-    <h1>{info.title}</h1>
-    <p class="summary">{info.summary}</p>
+    <h1 data-i18n={`check:${check}.title`}>{info.title}</h1>
+    <p class="summary" data-i18n={`check:${check}.summary`}>
+      {info.summary}
+    </p>
     <PillLinks links={tags} />
-    <ScanForm tool={scanCheck} label={scanLabel} />
+    <ScanForm
+      tool={scanCheck}
+      label={scanLabel}
+      labelI18n={scanLabelI18n}
+      labelVars={scanLabelVars}
+    />
   </section>
 
   <div class="body">
     <article>
-      <h2>What it is</h2>
-      <p>{info.description}</p>
-      <h2>Why it matters</h2>
-      <p>{info.use}</p>
+      <h2 data-i18n="What it is">What it is</h2>
+      <p data-i18n={`check:${check}.description`}>{info.description}</p>
+      <h2 data-i18n="Why it matters">Why it matters</h2>
+      <p data-i18n={`check:${check}.use`}>{info.use}</p>
     </article>
 
     {terms.length > 0 && (
       <section class="terms">
-        <h2>Key terms</h2>
+        <h2 data-i18n="Key terms">Key terms</h2>
         <TermList terms={terms} linkToGlossary />
       </section>
     )}
@@ -80,7 +95,7 @@ const terms = Object.entries(glossary).filter(([, term]) => term.check === check
       } -->
       {resources.length > 0 && (
         <div class="resources">
-          <h2>Further reading</h2>
+          <h2 data-i18n="Further reading">Further reading</h2>
           <ul>
             {resources.map((resource) => (
               <li>

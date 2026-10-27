@@ -9,7 +9,9 @@ import { sections } from '@/data/settings';
   commandfor="settings"
   command="show-modal"
   aria-label="Settings"
+  data-i18n-aria-label="Settings"
   title="Settings"
+  data-i18n-title="Settings"
 >
   <Icon name="gear" size={1.1} />
 </button>
@@ -17,14 +19,22 @@ import { sections } from '@/data/settings';
 <dialog id="settings" class="settings-dialog" aria-labelledby="settings-title" closedby="any">
   <form method="dialog">
     <header>
-      <h2 id="settings-title">Settings</h2>
-      <button class="icon-button" aria-label="Close settings" title="Close">
+      <h2 id="settings-title" data-i18n="Settings">
+        Settings
+      </h2>
+      <button
+        class="icon-button"
+        aria-label="Close settings"
+        data-i18n-aria-label="Close settings"
+        title="Close"
+        data-i18n-title="Close"
+      >
         <Icon name="xmark" size={0.9} />
       </button>
     </header>
     {sections.map(({ title, settings }) => (
       <fieldset>
-        <legend>{title}</legend>
+        <legend data-i18n={title}>{title}</legend>
         {settings.map((setting) => (
           <SettingRow {...setting} />
         ))}
@@ -34,6 +44,7 @@ import { sections } from '@/data/settings';
 </dialog>
 
 <script>
+  import { t } from '@/i18n';
   import {
     clearAllData,
     defaults,
@@ -48,7 +59,9 @@ import { sections } from '@/data/settings';
   const countSkipped = (form: HTMLFormElement) => {
     const count = form.querySelector('.skipped-count');
     const total = new FormData(form).getAll('skippedChecks').length;
-    if (count) count.textContent = `${total || 'None'} skipped`;
+    if (count) {
+      count.textContent = total ? t('{count} skipped', { count: total }) : t('None skipped');
+    }
   };
 
   // Show whatever's saved, or the default if nothing is. The OS can lock some toggles on
@@ -78,7 +91,7 @@ import { sections } from '@/data/settings';
     if (button.dataset.armed) return clearAllData();
     const label = button.textContent;
     button.dataset.armed = 'true';
-    button.textContent = 'Sure? Click again';
+    button.textContent = t('Sure? Click again');
     setTimeout(() => {
       delete button.dataset.armed;
       button.textContent = label;

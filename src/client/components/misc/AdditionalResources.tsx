@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import colors from 'client/styles/colors';
 import { Card } from 'client/components/Form/Card';
 import type { CategoryId } from '@/data/categories';
+import { useT } from 'client/i18n';
 
 const ResourceListOuter = styled.ul`
   list-style: none;
@@ -327,9 +328,10 @@ const AdditionalResources = ({
   const shown = categories
     ? resources.filter((r) => r.categories.some((c) => categories.includes(c)))
     : resources;
+  const t = useT();
   if (!shown.length) return null;
   return (
-    <Card heading="External Tools for Further Research" styles={CardStyles}>
+    <Card heading={t('External Tools for Further Research')} styles={CardStyles}>
       <ResourceListOuter>
         {shown.map((resource, index) => {
           return (
@@ -344,14 +346,14 @@ const AdditionalResources = ({
                 <span
                   className="resource-link"
                   onClick={() => window.open(resource.link, '_blank')}
-                  title={`Open: ${resource.link}`}
+                  title={t('Open: {link}', { link: resource.link })}
                 >
                   {new URL(resource.link).hostname}
                 </span>
                 <div className="resource-lower">
                   <img src={resource.icon} alt="" />
                   <div className="resource-details">
-                    <p className="resource-description">{resource.description}</p>
+                    <p className="resource-description">{t(resource.description)}</p>
                   </div>
                 </div>
               </a>
@@ -360,14 +362,20 @@ const AdditionalResources = ({
         })}
       </ResourceListOuter>
       <Note>
-        These tools are not affiliated with Web-Check. Please use them at your own risk.
+        {t('These tools are not affiliated with Web-Check. Please use them at your own risk.')}
         <br />
-        At the time of listing, all of the above were available and free to use - if this changes,
-        please report it via GitHub (
-        <a target="_blank" rel="noreferrer" href="https://github.com/lissy93/web-check">
-          lissy93/web-check
-        </a>
-        ).
+        <span
+          dangerouslySetInnerHTML={{
+            __html: t(
+              'At the time of listing, all of the above were available and free to use - if this changes, please report it via GitHub ({link}).',
+              {
+                link:
+                  '<a target="_blank" rel="noreferrer" href="https://github.com/lissy93/web-check">' +
+                  'lissy93/web-check</a>',
+              },
+            ),
+          }}
+        />
       </Note>
     </Card>
   );

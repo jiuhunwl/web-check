@@ -13,13 +13,15 @@ const others = categoryIds.filter((category) => category !== current);
 ---
 
 <nav aria-labelledby="other-checks">
-  <h2 id="other-checks">{heading}</h2>
+  <h2 id="other-checks" data-i18n={heading}>
+    {heading}
+  </h2>
   <ul>
     {others.map((category) => (
       <li>
         <a href={`/${category}`}>
           <Icon name={categories[category].icon} size={1.1} />
-          {categories[category].label}
+          <span data-i18n={`category:${category}.label`}>{categories[category].label}</span>
           <span class="count">{checksInCategory(category).length}</span>
         </a>
       </li>

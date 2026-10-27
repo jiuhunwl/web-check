@@ -1,6 +1,9 @@
 import { Card } from 'client/components/Form/Card';
 import Row, { ExpandableRow, Section, type RowProps } from 'client/components/Form/Row';
+import { useT } from 'client/i18n';
 import type { TermId } from '@/data/glossary';
+
+type Translate = (key: string, vars?: Record<string, string | number | undefined | null>) => string;
 
 const KEY_FLAGS: Record<number, string> = {
   256: 'Zone Signing Key (ZSK)',
@@ -109,30 +112,34 @@ const parseDSData = (data: string) => {
   };
 };
 
-const makeResponseList = (response: any): RowProps[] =>
+const makeResponseList = (response: any, t: Translate): RowProps[] =>
   RESPONSE_FLAGS.filter(([key]) => typeof response?.[key] === 'boolean').map(([key, label]) => ({
-    lbl: `${label} (${key})`,
-    val: response[key] ? 'Yes' : 'No',
+    lbl: t('{label} ({flag})', { label: t(label), flag: key }),
+    val: response[key] ? t('Yes') : t('No'),
   }));
 
-const makeAnswerList = (recordData: any): RowProps[] =>
+const makeAnswerList = (recordData: any, t: Translate): RowProps[] =>
   [
-    { lbl: 'Domain', val: recordData.name },
+    { lbl: t('Domain'), val: recordData.name },
     {
-      lbl: 'Type',
-      val: `${RECORD_TYPES[recordData.type] || 'Unknown'} (${recordData.type})`,
+      lbl: t('Type'),
+      val: t('{name} ({code})', {
+        name: RECORD_TYPES[recordData.type] || t('Unknown'),
+        code: recordData.type,
+      }),
     },
     { lbl: 'TTL', val: recordData.TTL },
-    { lbl: 'Algorithm', val: recordData.algorithm },
-    { lbl: 'Flags', val: recordData.flags },
-    { lbl: 'Protocol', val: recordData.protocol },
-    { lbl: 'Public Key', val: recordData.publicKey },
-    { lbl: 'Key Tag', val: recordData.keyTag },
-    { lbl: 'Digest Type', val: recordData.digestType },
-    { lbl: 'Digest', val: recordData.digest },
+    { lbl: t('Algorithm'), val: recordData.algorithm },
+    { lbl: t('Flags'), val: recordData.flags },
+    { lbl: t('Protocol'), val: recordData.protocol },
+    { lbl: t('Public Key'), val: recordData.publicKey },
+    { lbl: t('Key Tag'), val: recordData.keyTag },
+    { lbl: t('Digest Type'), val: recordData.digestType },
+    { lbl: t('Digest'), val: recordData.digest },
   ].filter((rowData) => rowData.val);
 
 const DnsSecCard = (props: { data: any; title: string; actionButtons: any }): JSX.Element => {
+  const t = useT();
   const dnsSec = props.data;
   return (
     <Card heading={props.title} actionButtons={props.actionButtons}>
@@ -142,7 +149,7 @@ const DnsSecCard = (props: { data: any; title: string; actionButtons: any }): JS
           <Section key={key} title={key}>
             {record.isFound && record.answer && (
               <>
-                <Row lbl={label} val={true} term={term} />
+                <Row lbl={t(label)} val={true} term={term} yes={t('Yes')} no={t('No')} />
                 {record.answer.map((answer: any, index: number) => {
                   const parsed: any =
                     answer.type === 48
@@ -153,9 +160,9 @@ const DnsSecCard = (props: { data: any; title: string; actionButtons: any }): JS
                   return (
                     <ExpandableRow
                       key={`${key}-${index}`}
-                      lbl={`Record #${index + 1}`}
-                      val={parsed.flags || key}
-                      rowList={makeAnswerList({ ...answer, ...parsed })}
+                      lbl={t('Record #{number}', { number: index + 1 })}
+                      val={parsed.flags ? t(parsed.flags) : key}
+                      rowList={makeAnswerList({ ...answer, ...parsed }, t)}
                       open
                     />
                   );
@@ -164,11 +171,13 @@ const DnsSecCard = (props: { data: any; title: string; actionButtons: any }): JS
             )}
             {!(record.isFound && record.answer) && record.response && (
               <ExpandableRow
-                lbl={label}
+                lbl={t(label)}
                 term={term}
                 val={!!record.isFound}
                 status={record.isFound ? 'pass' : 'warning'}
-                rowList={makeResponseList(record.response)}
+                yes={t('Yes')}
+                no={t('No')}
+                rowList={makeResponseList(record.response, t)}
               />
             )}
           </Section>

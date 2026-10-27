@@ -2,6 +2,7 @@ import colors from 'client/styles/colors';
 import { Card } from 'client/components/Form/Card';
 import Row from 'client/components/Form/Row';
 import { fromFinding } from 'client/components/misc/Icon';
+import { useT } from 'client/i18n';
 import type { Vuln } from 'client/utils/result-processor';
 import { formatNumber } from 'client/utils/format';
 import checkVulns from 'client/analysis/rules/vulnerabilities';
@@ -24,14 +25,20 @@ const VulnerabilitiesCard = (props: {
   title: string;
   actionButtons: any;
 }): JSX.Element => {
+  const t = useT();
   const vulns: Vuln[] = props.data.vulns || [];
   const exploited = vulns.filter((v) => v.kev).length;
   const [finding] = checkVulns(props.data);
   return (
     <Card heading={props.title} actionButtons={props.actionButtons} styles={cardStyles}>
-      <Row lbl="Known CVEs" val={vulns.length || 'None'} term="cve" {...fromFinding(finding)} />
+      <Row
+        lbl={t('Known CVEs')}
+        val={vulns.length || t('None')}
+        term="cve"
+        {...fromFinding(finding)}
+      />
       {exploited > 0 && (
-        <Row lbl="Actively exploited" val={exploited} status="error" term="known-exploited" />
+        <Row lbl={t('Actively exploited')} val={exploited} status="error" term="known-exploited" />
       )}
       <div className="cves">
         {vulns.map((v) => (
@@ -40,13 +47,17 @@ const VulnerabilitiesCard = (props: {
               <a href={`https://nvd.nist.gov/vuln/detail/${v.id}`} target="_blank" rel="noreferrer">
                 {v.id}
               </a>{' '}
-              {v.kev && <b title="In CISA's Known Exploited Vulnerabilities catalog">Exploited</b>}
+              {v.kev && (
+                <b title={t("In CISA's Known Exploited Vulnerabilities catalog")}>
+                  {t('Exploited')}
+                </b>
+              )}
             </span>
             <small>
               {[
                 v.epss != null && `EPSS ${formatNumber(v.epss * 100, { digits: 1 })}%`,
                 v.cvss != null && `CVSS ${formatNumber(v.cvss, { digits: 1 })}`,
-                v.port && `${v.product || 'Port'} ${v.port}`,
+                v.port && `${v.product || t('Port')} ${v.port}`,
               ]
                 .filter(Boolean)
                 .join(' · ')}

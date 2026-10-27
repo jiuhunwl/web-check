@@ -13,16 +13,18 @@ import Logo from '@components/molecules/Logo.astro';
       <span class="check">Check</span>
     </h1>
     <div class="homepage-action-content">
-      <h2>
+      <h2 data-i18n-html="We give you X-Ray <br /> Vision for your Website">
         We give you X-Ray
         <br />
         Vision for your Website
       </h2>
-      <h3>
+      <h3 data-i18n-html="In just 20 seconds, you can see <span>what attackers already know</span>">
         In just 20 seconds, you can see <span>what attackers already know</span>
       </h3>
       <form name="live-start" autocomplete="off" action="/check" class="live-start" id="live-start">
-        <label for="url">Enter a URL to start 👇</label>
+        <label for="url" data-i18n="Enter a URL to start 👇">
+          Enter a URL to start 👇
+        </label>
         <AnimatedInput />
         <AnimatedButton />
       </form>

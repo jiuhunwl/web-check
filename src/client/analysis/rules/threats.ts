@@ -1,4 +1,5 @@
 import type { Analyzer } from '../types';
+import { t } from '@/i18n';
 
 // Any positive hit on a reputable threat feed is critical
 const threats: Analyzer = (d) => {
@@ -6,23 +7,23 @@ const threats: Analyzer = (d) => {
   if (d.safeBrowsing?.unsafe) {
     out.push({
       severity: 'critical',
-      title: 'Listed by Google Safe Browsing',
-      detail: 'Site flagged for malware, phishing or unwanted software',
+      title: t('Listed by Google Safe Browsing'),
+      detail: t('Site flagged for malware, phishing or unwanted software'),
     });
   }
   if (Array.isArray(d.urlHaus?.urls) && d.urlHaus.urls.length) {
-    out.push({ severity: 'critical', title: 'Listed on URLhaus malware feed' });
+    out.push({ severity: 'critical', title: t('Listed on URLhaus malware feed') });
   }
   const phish = d.phishTank?.url0;
   const inDb = phish?.in_database === 'true' || phish?.in_database === true;
   const valid = phish?.valid === 'true' || phish?.valid === true;
   if (inDb && valid) {
-    out.push({ severity: 'critical', title: 'Listed on PhishTank' });
+    out.push({ severity: 'critical', title: t('Listed on PhishTank') });
   }
   if (d.cloudmersive?.CleanResult === false) {
-    out.push({ severity: 'critical', title: 'Cloudmersive flagged this site as unsafe' });
+    out.push({ severity: 'critical', title: t('Cloudmersive flagged this site as unsafe') });
   }
-  if (!out.length) out.push({ severity: 'pass', title: 'No threat feed matches' });
+  if (!out.length) out.push({ severity: 'pass', title: t('No threat feed matches') });
   return out;
 };
 

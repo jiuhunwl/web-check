@@ -1,4 +1,5 @@
 import type { Analyzer, Result } from '../types';
+import { t } from '@/i18n';
 
 const label = (profile: any): string => `${profile.network} @${profile.handle}`;
 
@@ -14,19 +15,23 @@ const socialPresence: Analyzer = (d) => {
   if (missing.length) {
     findings.push({
       severity: 'issue',
-      title: `Social account not found: ${missing.length}`,
-      detail: `This site points to ${missing.map(label).join(', ')}, which does not exist`,
+      title: t('Social account not found: {count}', { count: missing.length }),
+      detail: t('This site points to {accounts}, which does not exist', {
+        accounts: missing.map(label).join(', '),
+      }),
     });
   }
   if (unconfirmed.length) {
     findings.push({
       severity: 'warning',
-      title: `Unconfirmed social accounts: ${unconfirmed.length}`,
-      detail: `${unconfirmed.map(label).join(', ')} does not link back to this site`,
+      title: t('Unconfirmed social accounts: {count}', { count: unconfirmed.length }),
+      detail: t('{accounts} does not link back to this site', {
+        accounts: unconfirmed.map(label).join(', '),
+      }),
     });
   }
   if (!findings.length && confirmed.length && !unchecked.length) {
-    findings.push({ severity: 'pass', title: 'Social accounts link back to this site' });
+    findings.push({ severity: 'pass', title: t('Social accounts link back to this site') });
   }
   return findings;
 };

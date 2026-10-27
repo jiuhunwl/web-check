@@ -1,4 +1,5 @@
 import type { Analyzer, Severity } from '../types';
+import { t } from '@/i18n';
 
 // The tracker categories worth flagging, and how much
 export const FLAGGED: Record<string, Severity> = {
@@ -7,7 +8,7 @@ export const FLAGGED: Record<string, Severity> = {
   'Site Analytics': 'info',
 };
 
-const names = (list: any[]): string => list.map((t) => t.name).join(', ');
+const names = (list: any[]): string => list.map((entry) => entry.name).join(', ');
 
 // Warn on ad trackers, and note any analytics or other tracking the page reports to
 const trackers: Analyzer = (d) => {
@@ -19,25 +20,25 @@ const trackers: Analyzer = (d) => {
   if (ads.length) {
     out.push({
       severity: 'warning',
-      title: `Loads ${ads.length} advertising tracker(s)`,
+      title: t('Loads {count} advertising tracker(s)', { count: ads.length }),
       detail: names(ads),
     });
   }
   if (analytics.length) {
     out.push({
       severity: 'info',
-      title: `Reports to ${analytics.length} analytics service(s)`,
+      title: t('Reports to {count} analytics service(s)', { count: analytics.length }),
       detail: names(analytics),
     });
   }
   if (others.length) {
     out.push({
       severity: 'info',
-      title: `Contacts ${others.length} other tracking host(s)`,
+      title: t('Contacts {count} other tracking host(s)', { count: others.length }),
       detail: others.join(', '),
     });
   }
-  if (!out.length) out.push({ severity: 'pass', title: 'No trackers found' });
+  if (!out.length) out.push({ severity: 'pass', title: t('No trackers found') });
   return out;
 };
 

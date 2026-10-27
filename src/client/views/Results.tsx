@@ -23,6 +23,7 @@ import { determineAddressType, type AddressType } from 'client/utils/address-typ
 import { hasData } from 'client/utils/result-processor';
 import keys from 'client/utils/get-keys';
 import { getSetting } from 'client/utils/settings';
+import { useLang, useT } from 'client/i18n';
 import useJobs from 'client/hooks/useJobs';
 import { isCategory } from '@/data/categories';
 import { checks, isCheck } from '@/data/checks';
@@ -55,16 +56,23 @@ const ResultsContent = styled.section`
   }
 `;
 
-const makeActionButtons = (title: string, refresh: () => void, showInfo: () => void): ReactNode => (
+const makeActionButtons = (
+  t: ReturnType<typeof useT>,
+  title: string,
+  refresh: () => void,
+  showInfo: () => void,
+): ReactNode => (
   <ActionButtons
     actions={[
-      { label: `Info about ${title}`, onClick: showInfo, icon: 'ⓘ' },
-      { label: `Re-fetch ${title} data`, onClick: refresh, icon: '↻' },
+      { label: t('Info about {title}', { title }), onClick: showInfo, icon: 'ⓘ' },
+      { label: t('Re-fetch {title} data', { title }), onClick: refresh, icon: '↻' },
     ]}
   />
 );
 
 const Results = (props: { address?: string }): JSX.Element => {
+  const t = useT();
+  const lang = useLang();
   const { urlToScan, tool = '' } = useParams();
   const address = props.address || urlToScan || '';
   const addressType: AddressType = useMemo(() => determineAddressType(address), [address]);
@@ -83,18 +91,18 @@ const Results = (props: { address?: string }): JSX.Element => {
   // Shape useJobs state for the existing ProgressBar contract
   const loadingJobs: LoadingJob[] = useMemo(
     () =>
-      activeCards.map(({ card: { id, title } }) => {
+      activeCards.map(({ card: { id } }) => {
         const e = jobsState[id] || { state: 'loading' as LoadingState };
         return {
           id,
-          name: title,
+          name: t(`check:${id}.title`),
           state: e.state,
           error: e.error,
           timeTaken: e.timeTaken,
           retry: () => retry(id),
         };
       }),
-    [jobsState, retry, activeCards],
+    [jobsState, retry, activeCards, lang],
   );
 
   // Expose successful job results on window.webCheck for debugging
@@ -112,7 +120,7 @@ const Results = (props: { address?: string }): JSX.Element => {
   }, [jobsState]);
 
   const showInfo = (id: string) => {
-    setModalContent(DocContent(id));
+    setModalContent(<DocContent id={id} />);
     setModalOpen(true);
   };
 
@@ -132,7 +140,7 @@ const Results = (props: { address?: string }): JSX.Element => {
 
   const cardsToShow = renderable.filter(({ data, entry }) => hasData(data) && !entry?.error);
 
-  const findings = useMemo(() => runAnalysis(jobsState, activeCards), [jobsState, activeCards]);
+  const findings = useMemo(() => runAnalysis(jobsState, activeCards), [jobsState, activeCards, lang]);
 
   // Show the loader until the first few checks have settled
   const settled = loadingJobs.filter((j) => j.state !== 'loading').length;
@@ -189,22 +197,26 @@ const Results = (props: { address?: string }): JSX.Element => {
           <AdvisoryPanel findings={findings} onJumpTo={jumpToCard} />
           <ResultsContent>
             <ResultsMasonryGrid minColWidth={336}>
-              {cardsToShow.map(({ card, data }) => (
-                <div id={`card-${card.id}`} key={`eb-${card.id}`}>
-                  <ErrorBoundary title={card.title}>
-                    <card.Component
-                      key={card.id}
-                      data={data}
-                      title={card.title}
-                      actionButtons={makeActionButtons(
-                        card.title,
-                        () => retry(card.id),
-                        () => showInfo(card.id),
-                      )}
-                    />
-                  </ErrorBoundary>
-                </div>
-              ))}
+              {cardsToShow.map(({ card, data }) => {
+                const title = t(`check:${card.id}.title`);
+                return (
+                  <div id={`card-${card.id}`} key={`eb-${card.id}`}>
+                    <ErrorBoundary title={title}>
+                      <card.Component
+                        key={card.id}
+                        data={data}
+                        title={title}
+                        actionButtons={makeActionButtons(
+                          t,
+                          title,
+                          () => retry(card.id),
+                          () => showInfo(card.id),
+                        )}
+                      />
+                    </ErrorBoundary>
+                  </div>
+                );
+              })}
             </ResultsMasonryGrid>
           </ResultsContent>
           {!loading && (

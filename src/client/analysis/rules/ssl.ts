@@ -1,6 +1,7 @@
 import type { Analyzer, Result } from '../types';
 import { daysUntil } from '../helpers';
 import { formatNumber } from 'client/utils/format';
+import { t } from '@/i18n';
 
 // Plain reasons for the validation errors sites most often get
 export const REASONS: Record<string, string> = {
@@ -18,28 +19,28 @@ export const checkExpiry = (validTo: unknown): Result | null => {
   if (days < 0) {
     return {
       severity: 'critical',
-      title: 'SSL certificate expired',
-      detail: `Expired ${formatNumber(-days)} day(s) ago`,
+      title: t('SSL certificate expired'),
+      detail: t('Expired {days} day(s) ago', { days: formatNumber(-days) }),
     };
   }
   if (days <= 7) {
     return {
       severity: 'critical',
-      title: 'SSL certificate expiring within a week',
-      detail: `Expires in ${days} day(s), renew immediately`,
+      title: t('SSL certificate expiring within a week'),
+      detail: t('Expires in {count} day(s), renew immediately', { count: days }),
     };
   }
   if (days <= 14) {
     return {
       severity: 'issue',
-      title: 'SSL certificate expiring soon',
-      detail: `Expires in ${days} day(s), schedule renewal`,
+      title: t('SSL certificate expiring soon'),
+      detail: t('Expires in {count} day(s), schedule renewal', { count: days }),
     };
   }
   return {
     severity: 'warning',
-    title: 'SSL certificate renews within a month',
-    detail: `Expires in ${days} day(s)`,
+    title: t('SSL certificate renews within a month'),
+    detail: t('Expires in {count} day(s)', { count: days }),
   };
 };
 
@@ -49,11 +50,11 @@ const ssl: Analyzer = (d) => {
   if (d.isValid === false) {
     out.push({
       severity: 'critical',
-      title: 'SSL certificate invalid',
-      detail: REASONS[d.authError] || d.authError || 'Certificate failed validation',
+      title: t('SSL certificate invalid'),
+      detail: REASONS[d.authError] || d.authError || t('Certificate failed validation'),
     });
   } else if (d.isValid === true) {
-    out.push({ severity: 'pass', title: 'SSL certificate valid' });
+    out.push({ severity: 'pass', title: t('SSL certificate valid') });
   }
   const expiry = checkExpiry(d.valid_to);
   if (expiry) out.push(expiry);

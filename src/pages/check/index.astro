@@ -4,6 +4,7 @@ import Footer from '@components/scafold/Footer.astro';
 import HomeBackground from '@components/homepage/HomeBackground';
 import ScanForm from '@components/form/ScanForm.astro';
 import SponsorCard from '@components/molecules/SponsorCard.astro';
+import LanguageSwitch from '@components/molecules/LanguageSwitch.astro';
 import Settings from '@components/settings/Settings.astro';
 import Logo from '@components/molecules/Logo.astro';
 import { checks, checkIds } from '@/data/checks';
@@ -26,7 +27,6 @@ export const prerender = true;
   })();
 </script>
 
-
 <PageLayout>
   <Fragment slot="nav" />
   <div slot="background" class="background">
@@ -38,15 +38,20 @@ export const prerender = true;
         <Logo />
         Web <em>Check</em>
       </h1>
-      <Settings />
+      <div class="header-actions">
+        <LanguageSwitch />
+        <Settings />
+      </div>
     </header>
     <ScanForm label="Enter a URL" showCategories />
     <div>
-      <h2>Checks</h2>
+      <h2 data-i18n="Checks">Checks</h2>
       <ul>
         {checkIds.map((id) => (
           <li>
-            <a href={`/${id}`}>{checks[id].title}</a>
+            <a href={`/${id}`} data-i18n={`check:${id}.title`}>
+              {checks[id].title}
+            </a>
           </li>
         ))}
       </ul>
@@ -73,10 +78,16 @@ export const prerender = true;
 
     header {
       display: flex;
-      flex-wrap: wrap-reverse;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: flex-end;
       gap: 1rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
 
     h1 {

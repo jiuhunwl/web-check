@@ -1,18 +1,20 @@
 import { Card, Note } from 'client/components/Form/Card';
 import Row, { ExpandableRow } from 'client/components/Form/Row';
 import { fromFinding } from 'client/components/misc/Icon';
+import { useT } from 'client/i18n';
 import checkBreaches from 'client/analysis/rules/breaches';
 import { formatNumber } from 'client/utils/format';
 
 const BreachesCard = (props: { data: any; title: string; actionButtons: any }): JSX.Element => {
+  const t = useT();
   const { domain, breaches = [] } = props.data;
   const [result] = checkBreaches(props.data);
   return (
     <Card heading={props.title} actionButtons={props.actionButtons}>
-      <Row lbl="Domain" val={domain} />
+      <Row lbl={t('Domain')} val={domain} />
       <Row
-        lbl="Breaches"
-        val={breaches.length || 'None'}
+        lbl={t('Breaches')}
+        val={breaches.length || t('None')}
         term="data-breach"
         {...fromFinding(result)}
       />
@@ -20,18 +22,18 @@ const BreachesCard = (props: { data: any; title: string; actionButtons: any }): 
         <ExpandableRow
           key={breach.name}
           lbl={breach.title}
-          val={`${formatNumber(breach.accounts)} accounts`}
+          val={t('{count} accounts', { count: formatNumber(breach.accounts) })}
           rowList={[
-            { lbl: 'Breach Date', val: breach.date },
-            { lbl: 'Site', val: breach.domain },
-            { lbl: 'Verified', val: breach.verified ? 'Yes' : 'No' },
-            { lbl: 'Data Exposed', listResults: breach.exposed },
-            { lbl: 'Details', plaintext: breach.description },
+            { lbl: t('Breach Date'), val: breach.date },
+            { lbl: t('Site'), val: breach.domain },
+            { lbl: t('Verified'), val: breach.verified ? t('Yes') : t('No') },
+            { lbl: t('Data Exposed'), listResults: breach.exposed },
+            { lbl: t('Details'), plaintext: breach.description },
           ]}
         />
       ))}
       <Note>
-        Source:{' '}
+        {t('Source:')}{' '}
         <a href="https://haveibeenpwned.com/" target="_blank" rel="noreferrer">
           Have I Been Pwned
         </a>

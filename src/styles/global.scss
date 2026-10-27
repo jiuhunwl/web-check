@@ -70,6 +70,45 @@ html[data-contrast='more'] :focus-visible {
   outline: 3px solid var(--primary) !important;
 }
 
+/* Chinese typography. The Latin webfont has no CJK glyphs, so fall through to
+   the system Chinese faces, and give the denser script a little more room. */
+html.lang-zh {
+  --font-sans:
+    'Hubot Sans', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei',
+    'Noto Sans SC', 'Source Han Sans SC', 'WenQuanYi Micro Hei', sans-serif;
+  --font-mono:
+    'PTMono', ui-monospace, Menlo, Monaco, Consolas, 'Sarasa Mono SC', 'Noto Sans Mono CJK SC',
+    monospace;
+
+  // Chinese has no italics; a slanted webfont reads as a rendering glitch
+  em,
+  i {
+    font-style: normal;
+  }
+
+  body {
+    letter-spacing: 0.01em;
+  }
+
+  p,
+  li {
+    line-height: 1.7;
+  }
+}
+
+/* Held back for a frame while Chinese copy is applied, then revealed. The
+   animation is a fallback so the page still shows if the script never runs. */
+html[data-i18n-pending] body {
+  opacity: 0;
+  animation: i18n-reveal 0s linear 1.2s forwards;
+}
+
+@keyframes i18n-reveal {
+  to {
+    opacity: 1;
+  }
+}
+
 body {
   font-family: var(--font-sans);
   line-height: 1;

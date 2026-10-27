@@ -1,4 +1,5 @@
 import type { Analyzer } from '../types';
+import { t } from '@/i18n';
 
 // One year, the shortest max-age the HSTS preload list accepts
 export const MIN_MAX_AGE = 31536000;
@@ -19,8 +20,8 @@ const hsts: Analyzer = (d) => {
     return [
       {
         severity: 'issue',
-        title: 'No HSTS header',
-        detail: 'Add Strict-Transport-Security to enforce HTTPS for clients',
+        title: t('No HSTS header'),
+        detail: t('Add Strict-Transport-Security to enforce HTTPS for clients'),
       },
     ];
   }
@@ -29,25 +30,28 @@ const hsts: Analyzer = (d) => {
   if (maxAge < MIN_MAX_AGE) {
     out.push({
       severity: 'warning',
-      title: 'HSTS max-age under a year',
-      detail: `Current max-age is ${maxAge}, raise it to ${MIN_MAX_AGE} for preload eligibility`,
+      title: t('HSTS max-age under a year'),
+      detail: t('Current max-age is {maxAge}, raise it to {minMaxAge} for preload eligibility', {
+        maxAge,
+        minMaxAge: MIN_MAX_AGE,
+      }),
     });
   }
   if (!includeSubDomains) {
     out.push({
       severity: 'warning',
-      title: 'HSTS missing includeSubDomains',
-      detail: 'Add includeSubDomains to protect every subdomain',
+      title: t('HSTS missing includeSubDomains'),
+      detail: t('Add includeSubDomains to protect every subdomain'),
     });
   }
   if (!preload) {
     out.push({
       severity: 'info',
-      title: 'HSTS missing preload directive',
-      detail: 'Add preload to qualify for the HSTS preload list',
+      title: t('HSTS missing preload directive'),
+      detail: t('Add preload to qualify for the HSTS preload list'),
     });
   }
-  if (d.compatible) out.push({ severity: 'pass', title: 'HSTS preload compatible' });
+  if (d.compatible) out.push({ severity: 'pass', title: t('HSTS preload compatible') });
   return out;
 };
 

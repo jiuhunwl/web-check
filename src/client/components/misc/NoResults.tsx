@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import colors from 'client/styles/colors';
 import { StyledCard } from 'client/components/Form/Card';
 import Heading from 'client/components/Form/Heading';
+import { useT } from 'client/i18n';
 
 const Wrapper = styled(StyledCard)`
   margin: 0 auto;
@@ -99,23 +100,24 @@ interface Props {
 
 // Surface a friendly explanation when input is invalid or the host is unreachable
 const NoResults = ({ address, error, kind = 'unreachable' }: Props): JSX.Element => {
+  const t = useT();
   const { title, description, reasons } = VARIANT[kind];
   return (
     <Wrapper role="alert">
       <Heading as="h2" align="left" color={colors.danger}>
-        {title}
+        {t(title)}
       </Heading>
-      <p>{description}</p>
+      <p>{t(description)}</p>
       <code className="target">{address}</code>
-      <p>Possible reasons:</p>
+      <p>{t('Possible reasons:')}</p>
       <ul className="reasons">
         {reasons.map((r) => (
-          <li key={r}>{r}</li>
+          <li key={r}>{t(r)}</li>
         ))}
       </ul>
       {error && (
         <span className="detail">
-          {kind === 'blocked' ? 'Reason' : 'Lookup error'}: {error}
+          {kind === 'blocked' ? t('Reason') : t('Lookup error')}: {error}
         </span>
       )}
     </Wrapper>

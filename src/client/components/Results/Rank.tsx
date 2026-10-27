@@ -2,6 +2,7 @@ import { AreaChart, Area, Tooltip, CartesianGrid, ResponsiveContainer } from 're
 import colors from 'client/styles/colors';
 import { Card } from 'client/components/Form/Card';
 import Row from 'client/components/Form/Row';
+import { useT } from 'client/i18n';
 import { formatDate, formatNumber } from 'client/utils/format';
 
 const cardStyles = `
@@ -35,7 +36,7 @@ const makeChartData = (data: { date: string; rank: number }[]) => {
   });
 };
 
-function Chart(chartData: { date: string; uv: number }[], data: any) {
+function Chart(chartData: { date: string; uv: number }[], data: any, t: ReturnType<typeof useT>) {
   return (
     <ResponsiveContainer width="100%" height={100}>
       <AreaChart width={400} height={100} data={chartData}>
@@ -47,7 +48,9 @@ function Chart(chartData: { date: string; uv: number }[], data: any) {
         />
         <Tooltip
           contentStyle={{ background: colors.background, color: colors.textColor, borderRadius: 4 }}
-          labelFormatter={(value) => `Date : ${formatDate(data[value as number].date)}`}
+          labelFormatter={(value) =>
+            t('Date : {date}', { date: formatDate(data[value as number].date) })
+          }
           formatter={(value) => formatNumber(Number(value))}
         />
         <Area
@@ -55,7 +58,7 @@ function Chart(chartData: { date: string; uv: number }[], data: any) {
           dataKey="uv"
           stroke={colors.primary}
           fillOpacity={1}
-          name="Rank"
+          name={t('Rank')}
           fill={`color-mix(in srgb, ${colors.backgroundSunken} 63%, transparent)`}
         />
       </AreaChart>
@@ -64,6 +67,7 @@ function Chart(chartData: { date: string; uv: number }[], data: any) {
 }
 
 const RankCard = (props: { data: any; title: string; actionButtons: any }): JSX.Element => {
+  const t = useT();
   const data = props.data.ranks || [];
   const { average, percentageChange } = makeRankStats(data);
   const chartData = makeChartData(data);
@@ -72,12 +76,12 @@ const RankCard = (props: { data: any; title: string; actionButtons: any }): JSX.
       <div className="rank-average">{formatNumber(data[0].rank)}</div>
       {percentageChange != null && (
         <Row
-          lbl="Change since Yesterday"
+          lbl={t('Change since Yesterday')}
           val={`${formatNumber(percentageChange, { digits: 2, signDisplay: 'exceptZero' })}%`}
         />
       )}
-      <Row lbl="Historical Average Rank" val={formatNumber(average)} />
-      <div className="chart-container">{Chart(chartData, data)}</div>
+      <Row lbl={t('Historical Average Rank')} val={formatNumber(average)} />
+      <div className="chart-container">{Chart(chartData, data, t)}</div>
     </Card>
   );
 };

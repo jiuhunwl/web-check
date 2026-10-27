@@ -12,14 +12,15 @@ interface Props {
 const { label, name, options, value, class: className } = Astro.props;
 ---
 
-<div class:list={['segmented', className]} role="radiogroup" aria-label={label}>
+<div class:list={['segmented', className]} role="radiogroup" aria-label={label} data-i18n-aria-label={label}>
   {options.map((option) => (
-    <label title={option.label}>
+    <label title={option.label} data-i18n-title={option.label}>
       <input
         type="radio"
         name={name}
         value={option.value}
         aria-label={option.label}
+        data-i18n-aria-label={option.label}
         checked={option.value === value}
       />
       {option.icon && <Icon name={option.icon} size={option.size} />}

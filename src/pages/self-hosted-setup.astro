@@ -157,14 +157,16 @@ const configGroups: { title: string; description: string; options: ConfigOption[
   title="Self-Hosted Setup | Web Check"
   description="Get started with running Web Check locally or on your own server."
 >
-  <h1>Self-Hosted Setup</h1>
-  <p>Get your own free instance of Web Check, running locally or on your server.</p>
+  <h1 data-i18n="Self-Hosted Setup">Self-Hosted Setup</h1>
+  <p data-i18n="Get your own free instance of Web Check, running locally or on your server.">
+    Get your own free instance of Web Check, running locally or on your server.
+  </p>
 
   <OptionCards cards={cardData} numbered />
 
   <section class="config">
-    <h2>Configuration</h2>
-    <p>
+    <h2 data-i18n="Configuration">Configuration</h2>
+    <p data-i18n-html="Web Check runs without any configuration, so everything below is optional.<br />Set values as environment variables, in <code>.env</code>, your host's dashboard, or with <code>docker run -e</code>.">
       Web Check runs without any configuration, so everything below is optional.
       <br />
       Set values as environment variables, in <code>.env</code>, your host's dashboard, or with{' '}
@@ -173,23 +175,28 @@ const configGroups: { title: string; description: string; options: ConfigOption[
     {configGroups.map((group) => (
       <details>
         <summary>
-          <h3>{group.title}</h3>
-          <span>{group.description}</span>
+          <h3 data-i18n={group.title}>{group.title}</h3>
+          <span data-i18n={group.description}>{group.description}</span>
         </summary>
         <dl>
           {group.options.map((option) => (
             <div>
               <dt>{option.key}</dt>
               <dd>
-                {option.info}
+                <span data-i18n={option.info}>{option.info}</span>
                 {option.example && (
                   <>
                     {' '}
-                    (e.g.<code>{option.example}</code>)
+                    <span
+                      data-i18n-html="(e.g.<code>{example}</code>)"
+                      data-i18n-vars={JSON.stringify({ example: option.example })}
+                    >
+                      (e.g.<code>{option.example}</code>)
+                    </span>
                   </>
                 )}
                 {option.link && (
-                  <a href={option.link} target="_blank" rel="noreferrer">
+                  <a href={option.link} target="_blank" rel="noreferrer" data-i18n="Get a key">
                     Get a key
                   </a>
                 )}

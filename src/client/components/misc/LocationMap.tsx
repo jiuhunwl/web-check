@@ -2,6 +2,7 @@ import { ComposableMap, Geographies, Geography, Annotation } from 'react-simple-
 
 import colors from 'client/styles/colors';
 import MapFeatures from 'client/assets/data/map-features.json';
+import { useT } from 'client/i18n';
 
 interface Props {
   lat: number;
@@ -11,6 +12,7 @@ interface Props {
 
 const MapChart = (location: Props) => {
   const { lat, lon, label } = location;
+  const t = useT();
 
   return (
     <ComposableMap
@@ -42,7 +44,7 @@ const MapChart = (location: Props) => {
         }}
       >
         <text x="-8" textAnchor="end" fill={colors.textColor} fontSize={25}>
-          {label || 'Server'}
+          {label || t('Server')}
         </text>
       </Annotation>
     </ComposableMap>

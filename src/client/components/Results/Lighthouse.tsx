@@ -1,8 +1,11 @@
 import { Card } from 'client/components/Form/Card';
 import { ExpandableRow, type RowProps } from 'client/components/Form/Row';
 import { toStatus } from 'client/components/misc/Icon';
+import { useT } from 'client/i18n';
 import { scoreSeverity } from 'client/analysis/rules/quality';
 import type { TermId } from '@/data/glossary';
+
+type Translate = (key: string, vars?: Record<string, string | number | undefined | null>) => string;
 
 interface Audit {
   id: string;
@@ -30,13 +33,14 @@ const categoryValue = (score?: number | null): RowProps =>
     : { val: 'N/A' };
 
 // An audit's value, coloured the way Lighthouse colours its scores
-const auditValue = ({ score, displayValue }: Audit): RowProps => {
+const auditValue = ({ score, displayValue }: Audit, t: Translate): RowProps => {
   if (typeof score !== 'number') return { val: displayValue || 'N/A' };
   const status = score >= 0.9 ? 'pass' : score >= 0.5 ? 'warning' : 'error';
-  return { val: displayValue || SCORE_TEXT[status], status };
+  return { val: displayValue || t(SCORE_TEXT[status]), status };
 };
 
 const LighthouseCard = (props: { data: any; title: string; actionButtons: any }): JSX.Element => {
+  const t = useT();
   const lighthouse = props.data;
   const categories = lighthouse?.categories || {};
   const audits = lighthouse?.audits || [];
@@ -49,13 +53,13 @@ const LighthouseCard = (props: { data: any; title: string; actionButtons: any })
           return {
             lbl: audits[id].title,
             title: audits[id].description,
-            ...auditValue(audits[id]),
+            ...auditValue(audits[id], t),
           };
         });
         return (
           <ExpandableRow
             key={`lighthouse-${index}`}
-            lbl={categories[key].title || key}
+            lbl={t(categories[key].title || key)}
             term={TERMS[key]}
             {...categoryValue(categories[key].score)}
             rowList={scoreList}

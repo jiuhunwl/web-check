@@ -7,15 +7,30 @@ import { categories, categoryIds } from '@/data/categories';
 interface Props {
   tool?: string;
   label: string;
+  labelI18n?: string;
+  labelVars?: Record<string, string | number>;
   buttonLabel?: string;
   showCategories?: boolean;
 }
 
-const { tool, label, buttonLabel = 'Analyze', showCategories = false } = Astro.props;
+const {
+  tool,
+  label,
+  labelI18n,
+  labelVars,
+  buttonLabel = 'Analyze',
+  showCategories = false,
+} = Astro.props;
 ---
 
 <form class="scan-form" action="/check" autocomplete="off" data-tool={tool}>
-  <label for="url-input">{label}</label>
+  <label
+    for="url-input"
+    data-i18n={labelI18n ?? label}
+    data-i18n-vars={labelVars ? JSON.stringify(labelVars) : undefined}
+  >
+    {label}
+  </label>
   <div class="controls">
     <AnimatedInput />
     <AnimatedButton label={buttonLabel}>
@@ -25,6 +40,7 @@ const { tool, label, buttonLabel = 'Analyze', showCategories = false } = Astro.p
           class="toggle"
           popovertarget="scan-categories"
           aria-label="Run one category"
+          data-i18n-aria-label="Run one category"
         >
           <Icon name="chevron" />
         </button>
@@ -36,7 +52,7 @@ const { tool, label, buttonLabel = 'Analyze', showCategories = false } = Astro.p
       {categoryIds.map((id) => (
         <button type="submit" name="tool" value={id}>
           <Icon name={categories[id].icon} />
-          {categories[id].label}
+          <span data-i18n={`category:${id}.label`}>{categories[id].label}</span>
         </button>
       ))}
     </div>

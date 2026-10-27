@@ -1,0 +1,82 @@
+---
+import Icon from '@components/molecules/Icon.svelte';
+import { LANGS, getLang } from '@/i18n';
+
+// Rendered in English at build time, then synced to the visitor's choice
+const current = getLang();
+---
+
+<div class="lang-switch" data-lang-switch>
+  <Icon name="globe" size={0.85} />
+  <select id="language-select" aria-label="Language" data-i18n-aria-label="Language">
+    {LANGS.map((lang) => (
+      <option value={lang.id} selected={lang.id === current}>
+        {lang.native}
+      </option>
+    ))}
+  </select>
+</div>
+
+<script>
+  import { getLang, onLangChange, setLang } from '@/i18n';
+  import type { Lang } from '@/i18n';
+
+  const sync = () => {
+    document.querySelectorAll<HTMLSelectElement>('[data-lang-switch] select').forEach((select) => {
+      select.value = getLang();
+    });
+  };
+
+  document.addEventListener('astro:page-load', () => {
+    sync();
+    document.querySelectorAll<HTMLSelectElement>('[data-lang-switch] select').forEach((select) => {
+      if (select.dataset.bound) return;
+      select.dataset.bound = 'true';
+      select.addEventListener('change', () => setLang(select.value as Lang));
+    });
+  });
+
+  onLangChange(sync);
+</script>
+
+<style lang="scss">
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.15rem 0.35rem 0.15rem 0.5rem;
+    border: 1px solid var(--line, var(--primary-transparent));
+    border-radius: 2rem;
+    background: var(--background-raised);
+    color: var(--text-color-secondary);
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover,
+    &:focus-within {
+      border-color: var(--primary);
+      color: var(--text-color);
+    }
+
+    select {
+      appearance: none;
+      border: none;
+      background: transparent;
+      padding: 0.25rem 0.25rem 0.25rem 0;
+      color: inherit;
+      font: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+      }
+
+      option {
+        color: var(--text-color);
+        background: var(--background-raised);
+      }
+    }
+  }
+</style>

@@ -27,9 +27,9 @@ const ids = checksInCategory(category);
   <CategoryHero category={category} info={info} count={ids.length} />
   <CheckList ids={ids} />
   <section class="why">
-    <h2>What this tells you</h2>
-    {info.why.map((paragraph) => (
-      <p>{paragraph}</p>
+    <h2 data-i18n="What this tells you">What this tells you</h2>
+    {info.why.map((paragraph, index) => (
+      <p data-i18n={`category:${category}.why.${index}`}>{paragraph}</p>
     ))}
   </section>
   <CategoryLinks current={category} />

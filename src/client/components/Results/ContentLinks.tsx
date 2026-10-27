@@ -1,19 +1,21 @@
 import { Card } from 'client/components/Form/Card';
 import Row, { Section } from 'client/components/Form/Row';
+import { useT } from 'client/i18n';
 import { getPath } from 'client/utils/result-processor';
 import { formatNumber } from 'client/utils/format';
 
 const ContentLinksCard = (props: { data: any; title: string; actionButtons: any }): JSX.Element => {
+  const t = useT();
   const internal: string[] = props.data.internal || [];
   const external: string[] = props.data.external || [];
   return (
     <Card heading={props.title} actionButtons={props.actionButtons}>
-      <Section title="Summary">
-        <Row lbl="Internal Link Count" val={formatNumber(internal.length)} />
-        <Row lbl="External Link Count" val={formatNumber(external.length)} />
+      <Section title={t('Summary')}>
+        <Row lbl={t('Internal Link Count')} val={formatNumber(internal.length)} />
+        <Row lbl={t('External Link Count')} val={formatNumber(external.length)} />
       </Section>
       {internal.length > 0 && (
-        <Section title="Internal Links" collapsible>
+        <Section title={t('Internal Links')} collapsible>
           {internal.map((link) => (
             <Row key={link}>
               <a href={link} target="_blank" rel="noreferrer">
@@ -24,7 +26,7 @@ const ContentLinksCard = (props: { data: any; title: string; actionButtons: any 
         </Section>
       )}
       {external.length > 0 && (
-        <Section title="External Links" collapsible>
+        <Section title={t('External Links')} collapsible>
           {external.map((link) => (
             <Row key={link}>
               <a href={link} target="_blank" rel="noreferrer">

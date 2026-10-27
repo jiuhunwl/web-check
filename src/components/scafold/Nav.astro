@@ -1,10 +1,11 @@
 ---
 import Logo from '@components/molecules/Logo.astro';
+import LanguageSwitch from '@components/molecules/LanguageSwitch.astro';
 ---
 
 <nav class="navbar">
   <div class="nav-left">
-    <a href="/" class="logo-link" aria-label="Home">
+    <a href="/" class="logo-link" aria-label="Home" data-i18n-aria-label="Home">
       <Logo />
       <h2 class="site-title">
         <span class="first">Web</span>
@@ -15,19 +16,12 @@ import Logo from '@components/molecules/Logo.astro';
   </div>
   <div class="nav-right">
     <slot>
-      <a href="/check" class="nav-link">
-        Check
-      </a>
-      <a href="/checks" class="nav-link">
-        Docs
-      </a>
-      <a href="/web-check-api" class="nav-link">
-        API
-      </a>
-      <a href="/account" class="nav-link">
-        Login
-      </a>
+      <a href="/check" class="nav-link" data-i18n="Check"> Check </a>
+      <a href="/checks" class="nav-link" data-i18n="Docs"> Docs </a>
+      <a href="/web-check-api" class="nav-link" data-i18n="API"> API </a>
+      <a href="/account" class="nav-link" data-i18n="Login"> Login </a>
     </slot>
+    <LanguageSwitch />
   </div>
 </nav>
 
@@ -83,8 +77,20 @@ import Logo from '@components/molecules/Logo.astro';
 
     .nav-right {
       display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      // Never squeeze the links; the navbar wraps to a second row instead
+      flex-shrink: 0;
+      gap: 0.25rem 0;
+
+      :global(.lang-switch) {
+        margin-left: 1rem;
+        flex-shrink: 0;
+      }
 
       .nav-link {
+        white-space: nowrap;
         text-decoration: none;
         color: var(--text-color);
         margin-left: 1rem;

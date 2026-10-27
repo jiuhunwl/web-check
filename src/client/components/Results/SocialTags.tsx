@@ -1,6 +1,7 @@
 import { Card } from 'client/components/Form/Card';
 import Row from 'client/components/Form/Row';
 import colors from 'client/styles/colors';
+import { useT } from 'client/i18n';
 import { REQUIRED } from 'client/analysis/rules/social-tags';
 
 const cardStyles = `
@@ -18,34 +19,36 @@ const cardStyles = `
 `;
 
 const OgBanner = ({ ogImage, ogUrl }: { ogImage: string; ogUrl?: string }): JSX.Element => {
+  const t = useT();
   const urlCover = ogImage.startsWith('/') && ogUrl ? `${ogUrl}${ogImage}` : ogImage;
   return (
     <div className="banner-image">
-      <img src={urlCover} alt="Banner" />
+      <img src={urlCover} alt={t('Banner')} />
     </div>
   );
 };
 
 const SocialTagsCard = (props: { data: any; title: string; actionButtons: any }): JSX.Element => {
+  const t = useT();
   const tags = props.data;
   return (
     <Card heading={props.title} actionButtons={props.actionButtons} styles={cardStyles}>
-      {tags.title && <Row lbl="Title" val={tags.title} />}
-      {tags.description && <Row lbl="Description" val={tags.description} />}
-      {tags.keywords && <Row lbl="Keywords" val={tags.keywords} />}
-      {tags.canonicalUrl && <Row lbl="Canonical URL" val={tags.canonicalUrl} />}
+      {tags.title && <Row lbl={t('Title')} val={tags.title} />}
+      {tags.description && <Row lbl={t('Description')} val={tags.description} />}
+      {tags.keywords && <Row lbl={t('Keywords')} val={tags.keywords} />}
+      {tags.canonicalUrl && <Row lbl={t('Canonical URL')} val={tags.canonicalUrl} />}
       {REQUIRED.map(([key, label]) => (
         <Row
           key={key}
-          lbl={label}
-          val={tags[key] || 'Missing'}
+          lbl={t(label)}
+          val={tags[key] || t('Missing')}
           status={tags[key] ? 'pass' : 'warning'}
           term={key === 'twitterCard' ? 'twitter-card' : 'open-graph'}
         />
       ))}
       {tags.themeColor && (
         <Row>
-          <span className="lbl">Theme Color</span>
+          <span className="lbl">{t('Theme Color')}</span>
           <span className="val color-field" style={{ background: tags.themeColor }}>
             {tags.themeColor}
           </span>
@@ -53,14 +56,14 @@ const SocialTagsCard = (props: { data: any; title: string; actionButtons: any })
       )}
       {tags.twitterSite && (
         <Row
-          lbl="X Profile"
+          lbl={t('X Profile')}
           val={tags.xHandle ? `@${tags.xHandle}` : tags.twitterSite}
           link={tags.xHandle && `https://x.com/${tags.xHandle}`}
         />
       )}
-      {tags.author && <Row lbl="Author" val={tags.author} />}
-      {tags.publisher && <Row lbl="Publisher" val={tags.publisher} />}
-      {tags.generator && <Row lbl="Generator" val={tags.generator} />}
+      {tags.author && <Row lbl={t('Author')} val={tags.author} />}
+      {tags.publisher && <Row lbl={t('Publisher')} val={tags.publisher} />}
+      {tags.generator && <Row lbl={t('Generator')} val={tags.generator} />}
       {tags.ogImage && <OgBanner ogImage={tags.ogImage} ogUrl={tags.ogUrl} />}
     </Card>
   );

@@ -13,6 +13,7 @@ import Card from 'client/components/Form/Card';
 import Heading from 'client/components/Form/Heading';
 import Icon from 'client/components/misc/Icon';
 import { SEVERITIES, type Finding, type Severity } from 'client/analysis/types';
+import { useT } from 'client/i18n';
 
 interface SevMeta {
   label: string;
@@ -120,6 +121,7 @@ interface Props {
 
 // Group findings by severity, render summary + collapsible sections, hide when empty
 const AdvisoryPanel = ({ findings, onJumpTo }: Props): ReactNode => {
+  const t = useT();
   const { grouped, visible } = useMemo(() => {
     const grouped: Record<Severity, Finding[]> = {
       critical: [],
@@ -137,10 +139,11 @@ const AdvisoryPanel = ({ findings, onJumpTo }: Props): ReactNode => {
   return (
     <Wrapper>
       <Heading as="h2" align="left" color={colors.primary}>
-        Advisory
+        {t('Advisory')}
       </Heading>
       {visible.map((sev) => {
         const meta = META[sev];
+        const label = t(meta.label);
         const items = grouped[sev];
         return (
           <details
@@ -150,14 +153,14 @@ const AdvisoryPanel = ({ findings, onJumpTo }: Props): ReactNode => {
             style={{ background: `color-mix(in srgb, ${meta.color} 5%, transparent)` }}
           >
             <summary style={{ color: meta.color }}>
-              {meta.label}
+              {label}
               <span className="count">({items.length})</span>
             </summary>
             <ul className="findings">
               {items.map((f, i) => (
                 <li key={`${f.cardId}-${i}`}>
                   <span className="glyph">
-                    <Icon icon={meta.icon} color={meta.color} label={meta.label} />
+                    <Icon icon={meta.icon} color={meta.color} label={label} />
                   </span>
                   <span className="body">
                     <button type="button" className="jump" onClick={() => onJumpTo(f.cardId)}>

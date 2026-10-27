@@ -5,7 +5,8 @@ import Heading from 'client/components/Form/Heading';
 import { StatusIcon, type Status } from 'client/components/misc/Icon';
 import Tooltip from 'client/components/misc/Tooltip';
 import { formatDate } from 'client/utils/format';
-import { termText, type TermId } from '@/data/glossary';
+import { useT } from 'client/i18n';
+import { termText, type TermId } from '@/i18n';
 
 export interface RowProps {
   lbl?: string;
@@ -135,16 +136,16 @@ const isDateLike = (value: any): boolean => {
 };
 
 // The text shown for a value, with dates formatted and booleans as yes or no
-const valueText = ({ val, yes = 'Yes', no = 'No' }: RowProps): string => {
-  if (typeof val === 'boolean') return val ? yes : no;
+const valueText = ({ val, yes, no }: RowProps, t: ReturnType<typeof useT>): string => {
+  if (typeof val === 'boolean') return val ? (yes ?? t('Yes')) : (no ?? t('No'));
   return isDateLike(val) ? formatDate(val as string) : String(val ?? '');
 };
 
 // Why a row got its status, then what its term means, for the tooltip on its icon
-const hint = ({ reason, term }: RowProps, status: Status) =>
+const hint = ({ reason, term }: RowProps, status: Status, t: ReturnType<typeof useT>) =>
   (reason || term) && (
     <>
-      {reason && <b>{reason}</b>}
+      {reason && <b>{t(reason)}</b>}
       {term && termText(term, status === 'pass')}
     </>
   );
@@ -152,8 +153,9 @@ const hint = ({ reason, term }: RowProps, status: Status) =>
 // A value's text, as a link when given one, then its status icon
 const Value = (props: RowProps) => {
   const { val, link } = props;
+  const t = useT();
   const status = props.status || (typeof val === 'boolean' ? (val ? 'pass' : 'error') : undefined);
-  const text = valueText(props);
+  const text = valueText(props, t);
   return (
     <>
       {link ? (
@@ -164,7 +166,7 @@ const Value = (props: RowProps) => {
         <span>{text}</span>
       )}
       {status && (
-        <Tooltip content={hint(props, status)}>
+        <Tooltip content={hint(props, status, t)}>
           <StatusIcon status={status} />
         </Tooltip>
       )}
@@ -213,6 +215,7 @@ export const Section = (props: {
 
 export const ExpandableRow = (props: RowProps & { rowList?: RowProps[]; open?: boolean }) => {
   const { lbl, val, title, rowList = [], open } = props;
+  const t = useT();
   return (
     <Details open={open}>
       <StyledRow as="summary">
@@ -220,7 +223,7 @@ export const ExpandableRow = (props: RowProps & { rowList?: RowProps[]; open?: b
           {lbl}
         </span>
         {val != null && (
-          <span className="val" title={title || valueText(props)}>
+          <span className="val" title={title || valueText(props, t)}>
             <Value {...props} />
           </span>
         )}
@@ -247,8 +250,9 @@ export const ListRow = (props: { list: string[]; title: string }) => {
 
 const Row = (props: RowProps) => {
   const { lbl, val, title, plaintext, listResults, children } = props;
+  const t = useT();
   if (children) return <StyledRow>{children}</StyledRow>;
-  const text = valueText(props);
+  const text = valueText(props, t);
   return (
     <StyledRow>
       {lbl && (

@@ -43,16 +43,23 @@ const schema = {
   customSchemaJson={schema}
 >
   <section class="intro">
-    <h1>Web security glossary</h1>
-    <p class="tagline">Quick reference for the terms used for website security and OSINT.</p>
-    <nav aria-label="Glossary sections">
+    <h1 data-i18n="Web security glossary">Web security glossary</h1>
+    <p
+      class="tagline"
+      data-i18n="Quick reference for the terms used for website security and OSINT."
+    >
+      Quick reference for the terms used for website security and OSINT.
+    </p>
+    <nav aria-label="Glossary sections" data-i18n-aria-label="Glossary sections">
       <PillLinks links={groups.map((group) => ({ label: group.title, href: `#${group.id}` }))} />
     </nav>
   </section>
 
   {groups.map((group) => (
     <section>
-      <h2 id={group.id}>{group.title}</h2>
+      <h2 id={group.id} data-i18n={group.title}>
+        {group.title}
+      </h2>
       <TermList terms={Object.entries(group.terms)} />
     </section>
   ))}

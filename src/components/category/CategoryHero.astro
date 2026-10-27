@@ -14,10 +14,19 @@ const [lead, accent, tail] = info.heading;
 
 <section class="hero">
   <h1>
-    {lead} <em>{accent}</em> {tail}
+    <span data-i18n={`category:${category}.heading.0`}>{lead}</span>
+    <em data-i18n={`category:${category}.heading.1`}>{accent}</em>
+    <span data-i18n={`category:${category}.heading.2`}>{tail}</span>
   </h1>
-  <p class="tagline">{info.tagline}</p>
-  <ScanForm tool={category} label={`Enter a URL to run all ${count} checks`} />
+  <p class="tagline" data-i18n={`category:${category}.tagline`}>
+    {info.tagline}
+  </p>
+  <ScanForm
+    tool={category}
+    label={`Enter a URL to run all ${count} checks`}
+    labelI18n="Enter a URL to run all {count} checks"
+    labelVars={{ count }}
+  />
 </section>
 
 <style lang="scss">
