@@ -122,7 +122,7 @@ const common: Record<string, string> = {
   skipped: '已跳过',
   'timed out': '已超时',
   failed: '失败',
-  'Details for {name}': '{name} 的详情',
+  'Details for {name}': '{name}的详情',
   "The {name} job ended with state '{state}' after {time} ms.":
     '「{name}」以「{state}」状态结束，耗时 {time} ms。',
   "The {name} job ended with state '{state}'.": '「{name}」以「{state}」状态结束。',

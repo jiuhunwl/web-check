@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import styled from '@emotion/styled';
 import colors from 'client/styles/colors';
 import Button from 'client/components/Form/Button';
+import { useT } from 'client/i18n';
 
 interface ModalProps {
   children: ReactNode;
@@ -64,6 +65,7 @@ const ModalWindow = styled.div`
 `;
 
 const Modal: React.FC<ModalProps> = ({ children, isOpen, closeModal }) => {
+  const t = useT();
   const handleOverlayClick = (e: React.MouseEvent<HTMLElement>) => {
     if (e.target === e.currentTarget) {
       closeModal();
@@ -95,7 +97,7 @@ const Modal: React.FC<ModalProps> = ({ children, isOpen, closeModal }) => {
       <ModalWindow>
         {children}
         <Button onClick={closeModal} styles="width: fit-content;float: right;">
-          Close
+          {t('Close')}
         </Button>
       </ModalWindow>
     </Overlay>,
