@@ -6,22 +6,26 @@ import ScanForm from '@components/form/ScanForm.astro';
 import SponsorCard from '@components/molecules/SponsorCard.astro';
 import Settings from '@components/settings/Settings.astro';
 import Logo from '@components/molecules/Logo.astro';
-import { normalizeAddress } from '../../client/utils/address-type-checker';
-import { isCategory } from '@/data/categories';
-import { checks, checkIds, isCheck } from '@/data/checks';
+import { checks, checkIds } from '@/data/checks';
 
-export const prerender = false;
-
-const { searchParams } = new URL(Astro.request.url);
-
-// Forward ?url= links, and their optional ?tool=, to the matching results page
-const searchUrl = normalizeAddress(searchParams.get('url') || '');
-const searchTool = searchParams.get('tool') || '';
-const toolPath = isCategory(searchTool) || isCheck(searchTool) ? searchTool : 'check';
-const redirectPath = searchUrl && `/${toolPath}/${searchUrl}`;
-
-if (redirectPath) return Astro.redirect(redirectPath);
+// Static build for EdgeOne Makers: this page is prerendered, so ?url= links
+// are forwarded on the client (see the inline script below) instead of with
+// Astro.redirect(), which needs an SSR runtime.
+export const prerender = true;
 ---
+
+<script is:inline>
+  // Forward ?url= links (and their optional ?tool=) to the matching results page
+  (() => {
+    const params = new URLSearchParams(window.location.search);
+    const raw = (params.get('url') || '').trim();
+    if (!raw) return;
+    const tool = params.get('tool') || 'check';
+    const target = raw.replace(/^https?:\/\//i, '').replace(/\/+$/, '');
+    if (target) window.location.replace(`/${tool}/${target}`);
+  })();
+</script>
+
 
 <PageLayout>
   <Fragment slot="nav" />

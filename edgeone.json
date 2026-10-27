@@ -1,0 +1,27 @@
+{
+  "nodeVersion": "24.18.0",
+  "installCommand": "yarn install --ignore-engines",
+  "buildCommand": "yarn --ignore-engines build && rm -rf dist/server",
+  "outputDirectory": "dist/client",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/check",
+      "statusCode": 302
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/*",
+      "destination": "/index.html"
+    }
+  ],
+  "cloudFunctions": {
+    "nodejs": {
+      "maxDuration": 60,
+      "includeFiles": [
+        "api/**"
+      ]
+    }
+  }
+}

@@ -1,49 +1,36 @@
 ---
-import BaseLayout from '@layouts/Base.astro';
-import HeroForm from '@components/homepage/HeroForm.astro';
-import TempDisabled from '@/components/homepage/TempDisabled.astro';
-import HomeBackground from '@/components/homepage/HomeBackground';
-import AboutSection from '@/components/homepage/AboutSection.astro';
-import Footer from '@components/scafold/Footer.astro';
-import Settings from '@components/settings/Settings.astro';
+import PageLayout from '@layouts/Page.astro';
+import Main from '../client/main.tsx';
+import '../client/styles/index.css';
 
-const isBossServer = import.meta.env.BOSS_SERVER === 'true';
-
-const disableEverything = import.meta.env.VITE_DISABLE_EVERYTHING === true;
+/**
+ * Static app shell.
+ *
+ * EdgeOne Makers serves this file for unmatched paths (the SPA fallback
+ * `"rewrites": [{ "source": "/*", "destination": "/index.html" }]` in
+ * edgeone.json), so the React router in `client/main.tsx` can resolve
+ * /check/<url> and /<tool>/<url> on the client.
+ *
+ * Those two routes are `prerender = false` upstream and need an SSR runtime.
+ * Makers Cloud Functions run Node 20, while Astro 7 requires Node >= 22.12,
+ * so prerendering + client-side routing is the only way to run them there.
+ */
+export const prerender = true;
 ---
 
-<BaseLayout>
-  <Fragment slot="head">
-    {!isBossServer && <meta http-equiv="refresh" content="0; url=/check" />}
-  </Fragment>
-  {disableEverything && <TempDisabled />}
-  <main>
-    <div class="corner">
-      <Settings />
-    </div>
-    <HeroForm />
-    <AboutSection />
-  </main>
-  <Footer />
-  <HomeBackground client:only="react" />
-</BaseLayout>
+<script is:inline>
+  // The marketing homepage now lives at /home; self-hosted installs land on
+  // the scan form, which is also what upstream does via a meta refresh.
+  if (window.location.pathname === '/') window.location.replace('/check');
+</script>
 
-<style lang="scss">
-  @use '@styles/global.scss' as *;
-  main {
-    min-height: 100vh;
-    padding: 2rem;
-    margin: 0 auto;
-    z-index: 3;
-    background: var(--background);
-    @include tablet-landscape-down {
-      width: 96vw;
-    }
-  }
-  .corner {
-    position: absolute;
-    top: 2rem;
-    right: 2rem;
-    z-index: 6;
+<PageLayout title="Web Check" description="All-in-one OSINT tool for analysing any website">
+  <Main client:only="react" />
+</PageLayout>
+
+<style is:global>
+  body {
+    --page-width: min(94vw, 2200px);
+    --main-padding: 2rem 0;
   }
 </style>

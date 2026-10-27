@@ -12,6 +12,7 @@
 #         BUILT FILES
 # ------------------------
 dist/
+.edgeone/
 .vercel/
 .netlify/
 .webpack/
